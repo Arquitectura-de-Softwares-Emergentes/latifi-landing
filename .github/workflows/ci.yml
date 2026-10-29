@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # Nu HTML Checker. The asset id selects one exact published file and the
+      # sha256 is verified before the jar runs (T-05-01). The release was
+      # published on 2026-10-12 (same date as nu.validator:validator 26.10.12
+      # on Maven Central). A different file fails the check; it never runs.
+      - name: Download and verify Nu HTML Checker
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VNU_ASSET_ID: "634456536"
+          VNU_SHA256: 19f89e204cb881e2d88c5d0cd451df6c1ee8334e7fe626f6694b64a129f6a813
+        run: |
+          curl -fsSL \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/octet-stream" \
+            -o "${RUNNER_TEMP}/vnu.jar" \
+            "https://api.github.com/repos/validator/validator/releases/assets/${VNU_ASSET_ID}"
+          echo "${VNU_SHA256}  ${RUNNER_TEMP}/vnu.jar" | sha256sum -c -
+
+      - name: Validate HTML with the Nu HTML Checker
+        run: |
+          java -jar "${RUNNER_TEMP}/vnu.jar" --version
+          find . -name '*.html' -not -path '*/node_modules/*' -not -path './.git/*' -print0 \
+            | xargs -0 java -jar "${RUNNER_TEMP}/vnu.jar" --errors-only
+
+      - name: i18n and ARIA structure guard
+        run: bash scripts/check-i18n-a11y.sh
+
+      - name: Guard self-test
+        run: bash scripts/check-i18n-a11y.test.sh
+
+      - name: Check local links and fragments (offline)
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: --offline --no-progress --include-fragments './**/*.html' './**/*.md'
+          fail: true
