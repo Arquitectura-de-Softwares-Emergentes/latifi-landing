@@ -1,0 +1,52 @@
+/* Structural skeleton only. Phase 6 owns the real visual design. */
+:root {
+  --text: #1a1a1a;
+  --background: #ffffff;
+  --focus: #0b57d0; /* 6.9:1 against white, above the 3:1 minimum for focus indicators */
+}
+
+html {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  background: var(--background);
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+  padding: 1rem;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  padding: 0.5rem 1rem;
+  background: var(--background);
+  color: var(--text);
+}
+
+.skip-link:focus {
+  left: 0;
+  z-index: 1;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+nav a {
+  margin-right: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
