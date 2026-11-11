@@ -41,7 +41,7 @@ expect() {
 fresh
 expect "unmodified copy passes" 0
 
-fresh; mutate index.html 's/<html lang="en">/<html>/'
+fresh; mutate index.html 's/<html lang="en-US">/<html>/'
 expect "missing lang" 1
 
 fresh; mutate es/index.html 's/<html lang="es-419">/<html lang="fr">/'
@@ -59,7 +59,7 @@ expect "main id removed" 1
 fresh; mutate es/index.html 's#<title>[^<]*</title>#<title> </title>#'
 expect "empty title" 1
 
-fresh; mutate index.html '/hreflang="es-419" href="es\/index.html"/d'
+fresh; mutate index.html '/<link rel="alternate" hreflang="es-419"/d'
 expect "es-419 hreflang removed" 1
 
 fresh; mutate es/index.html '/hreflang="x-default"/d'

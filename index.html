@@ -1,29 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-LMzUjf/FsWpM5ilnkLmPPHasFBCNMQdH0FYHB8I+grY='; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LatiFi | Peer-to-peer microcredit</title>
-  <meta name="description" content="LatiFi connects people without bank access to lenders through a mobile wallet and smart contracts on a test network.">
+  <title>LatiFi: P2P microloans with verifiable reputation</title>
+  <meta name="description" content="LatiFi connects borrowers and lenders through blockchain-based P2P microloans. It never holds your funds and shows each applicant's reputation.">
+  <meta name="keywords" content="microloans, P2P loans, blockchain, stablecoins, credit reputation, digital wallet, LatiFi Wallet, Peru">
+  <meta name="author" content="LatiFi">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0B1F3A">
+  <link rel="canonical" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/">
+  <link rel="alternate" hreflang="en" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/">
+  <link rel="alternate" hreflang="en-US" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/">
+  <link rel="alternate" hreflang="es-419" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/es/">
+  <link rel="alternate" hreflang="x-default" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/">
+  <meta property="og:title" content="LatiFi: P2P microloans with verifiable reputation">
+  <meta property="og:description" content="LatiFi connects borrowers and lenders through blockchain-based P2P microloans. It never holds your funds and shows each applicant's reputation.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LatiFi">
+  <meta property="og:url" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/">
+  <meta property="og:image" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/img/og-latifi.png">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="es_LA">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LatiFi: P2P microloans with verifiable reputation">
+  <meta name="twitter:description" content="LatiFi connects borrowers and lenders through blockchain-based P2P microloans. It never holds your funds and shows each applicant's reputation.">
+  <meta name="twitter:image" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/img/og-latifi.png">
+  <meta name="twitter:image:alt" content="LatiFi logo on a dark navy background">
   <link rel="stylesheet" href="css/main.css">
-  <link rel="alternate" hreflang="en" href="index.html">
-  <link rel="alternate" hreflang="es-419" href="es/index.html">
-  <link rel="alternate" hreflang="x-default" href="index.html">
+  <script>try{var l=localStorage.getItem("latifi.lang"),h=location.hash,m={"#how-it-works":"#como-funciona","#benefits":"#beneficios","#security":"#seguridad","#download":"#descarga"};if(l=="es")location.replace("es/"+location.pathname.split("/").pop()+location.search+(m[h]||h))}catch(e){}</script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header>
-    <nav aria-label="Language">
-      <a href="index.html" hreflang="en" lang="en" aria-current="page">English</a>
-      <a href="es/index.html" hreflang="es-419" lang="es-419">Español</a>
-    </nav>
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="logo" href="index.html" aria-label="LatiFi, home">LatiFi</a>
+      <nav class="lang-switch" aria-label="Language">
+        <a href="index.html" hreflang="en" lang="en" aria-current="page">English</a>
+        <a href="es/index.html" hreflang="es-419" lang="es-419">Español</a>
+      </nav>
+    </div>
   </header>
-  <main id="main">
-    <h1>LatiFi</h1>
-    <p>Peer-to-peer microcredit for people without bank access, built as a university project on a test network.</p>
+  <main id="main" tabindex="-1">
+    <section id="top" class="hero" tabindex="-1" aria-labelledby="hero-title">
+      <div class="container">
+        <h1 id="hero-title">Microloans between people, with a reputation you can check</h1>
+        <p>Ask for a loan or fund one directly. LatiFi never holds your money or your keys, and every lender sees your payment history before deciding.</p>
+        <a class="btn btn-primary" href="#download">Get the app</a>
+        <p class="demo-notice">Academic demo on a test network. The money in the app has no real value.</p>
+      </div>
+    </section>
+    <section id="download" class="section section-alt" aria-labelledby="download-title">
+      <div class="container">
+        <div class="download-column">
+          <h2 id="download-title" tabindex="-1">Get the app</h2>
+          <p>LatiFi Wallet runs on Android. Download the test build and create your wallet in a few minutes.</p>
+          <div class="card-dark on-dark">
+            <a class="btn btn-primary-dark" href="#download" data-placeholder="true">Download for Android</a>
+            <p class="status">The download link goes live with the first release.</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer>
-    <p>SI728 Emerging Software Architectures, UPC.</p>
+  <footer class="site-footer on-dark">
+    <div class="container">
+      <p>SI728 Emerging Software Architectures, UPC. Academic project on a test network.</p>
+    </div>
   </footer>
   <script type="module" src="js/main.js"></script>
 </body>

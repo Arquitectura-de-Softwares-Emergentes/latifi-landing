@@ -2,28 +2,72 @@
 <html lang="es-419">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-eCyzDbjwzonLJwFlbpChmcqdl5ewFoKbnCA9u2jzkH8='; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LatiFi | Microcréditos entre personas</title>
-  <meta name="description" content="LatiFi conecta a personas sin acceso bancario con prestamistas mediante una billetera móvil y contratos inteligentes en una red de pruebas.">
+  <title>LatiFi: microcréditos P2P con reputación verificable</title>
+  <meta name="description" content="LatiFi conecta a prestatarios y prestamistas con microcréditos P2P sobre blockchain. No custodia tu dinero y muestra la reputación de cada solicitante.">
+  <meta name="keywords" content="microcréditos, préstamos P2P, blockchain, stablecoins, reputación crediticia, billetera digital, LatiFi Wallet, Perú">
+  <meta name="author" content="LatiFi">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0B1F3A">
+  <link rel="canonical" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/es/">
+  <link rel="alternate" hreflang="en" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/">
+  <link rel="alternate" hreflang="en-US" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/">
+  <link rel="alternate" hreflang="es-419" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/es/">
+  <link rel="alternate" hreflang="x-default" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/">
+  <meta property="og:title" content="LatiFi: microcréditos P2P con reputación verificable">
+  <meta property="og:description" content="LatiFi conecta a prestatarios y prestamistas con microcréditos P2P sobre blockchain. No custodia tu dinero y muestra la reputación de cada solicitante.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LatiFi">
+  <meta property="og:url" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/es/">
+  <meta property="og:image" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/img/og-latifi.png">
+  <meta property="og:locale" content="es_LA">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LatiFi: microcréditos P2P con reputación verificable">
+  <meta name="twitter:description" content="LatiFi conecta a prestatarios y prestamistas con microcréditos P2P sobre blockchain. No custodia tu dinero y muestra la reputación de cada solicitante.">
+  <meta name="twitter:image" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/img/og-latifi.png">
+  <meta name="twitter:image:alt" content="Logotipo de LatiFi sobre un fondo azul marino oscuro">
   <link rel="stylesheet" href="../css/main.css">
-  <link rel="alternate" hreflang="en" href="../index.html">
-  <link rel="alternate" hreflang="es-419" href="index.html">
-  <link rel="alternate" hreflang="x-default" href="../index.html">
+  <script>try{var l=localStorage.getItem("latifi.lang"),h=location.hash,m={"#como-funciona":"#how-it-works","#beneficios":"#benefits","#seguridad":"#security","#descarga":"#download"};if(l=="en")location.replace("../"+location.pathname.split("/").pop()+location.search+(m[h]||h))}catch(e){}</script>
 </head>
 <body>
   <a class="skip-link" href="#main">Saltar al contenido principal</a>
-  <header>
-    <nav aria-label="Idioma">
-      <a href="../index.html" hreflang="en" lang="en">English</a>
-      <a href="index.html" hreflang="es-419" lang="es-419" aria-current="page">Español</a>
-    </nav>
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="logo" href="index.html" aria-label="LatiFi, inicio">LatiFi</a>
+      <nav class="lang-switch" aria-label="Idioma">
+        <a href="../index.html" hreflang="en" lang="en">English</a>
+        <a href="index.html" hreflang="es-419" lang="es-419" aria-current="page">Español</a>
+      </nav>
+    </div>
   </header>
-  <main id="main">
-    <h1>LatiFi</h1>
-    <p>Microcréditos entre personas para quienes no tienen acceso bancario, construido como proyecto universitario en una red de pruebas.</p>
+  <main id="main" tabindex="-1">
+    <section id="top" class="hero" tabindex="-1" aria-labelledby="hero-title">
+      <div class="container">
+        <h1 id="hero-title">Microcréditos entre personas, con una reputación que puedes verificar</h1>
+        <p>Pide un préstamo o fondea uno directamente. LatiFi no custodia tu dinero ni tus llaves, y cada prestamista ve tu historial de pagos antes de decidir.</p>
+        <a class="btn btn-primary" href="#descarga">Descargar la app</a>
+        <p class="demo-notice">Demostración académica en una red de pruebas. El dinero de la app no tiene valor real.</p>
+      </div>
+    </section>
+    <section id="descarga" class="section section-alt" aria-labelledby="download-title">
+      <div class="container">
+        <div class="download-column">
+          <h2 id="download-title" tabindex="-1">Descarga la app</h2>
+          <p>LatiFi Wallet funciona en Android. Descarga la versión de prueba y crea tu billetera en pocos minutos.</p>
+          <div class="card-dark on-dark">
+            <a class="btn btn-primary-dark" href="#descarga" data-placeholder="true">Descargar para Android</a>
+            <p class="status">El enlace de descarga estará disponible con la primera versión.</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer>
-    <p>SI728 Arquitecturas de Software Emergentes, UPC.</p>
+  <footer class="site-footer on-dark">
+    <div class="container">
+      <p>SI728 Arquitecturas de Software Emergentes, UPC. Proyecto académico en una red de pruebas.</p>
+    </div>
   </footer>
   <script type="module" src="../js/main.js"></script>
 </body>

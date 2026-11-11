@@ -1,43 +1,364 @@
-/* Structural skeleton only. Phase 6 owns the real visual design. */
+/* LatiFi landing styles. Own Material Design tokens, light theme only (UI-SPEC, Phase 6). */
 :root {
-  --text: #1a1a1a;
-  --background: #ffffff;
-  --focus: #0b57d0; /* 6.9:1 against white, above the 3:1 minimum for focus indicators */
+  /* Color */
+  --color-white: #ffffff;
+  --color-surface-alt: #f5f7fa;
+  --color-navy-900: #0b1f3a;
+  --color-navy-700: #14407a;
+  --color-lime-400: #c6ff3d;
+  --color-lime-300: #d8ff7a;
+  --color-green-600: #0a7d5a;
+  --color-green-50: #e6f4ee;
+  --color-text: #101828;
+  --color-muted: #566174;
+  --color-divider: #dde3ea;
+  --color-soft: #e8eef7;
+  --color-on-navy-muted: #dde3ea;
+  --focus-light: #14407a;
+  --focus-dark: #c6ff3d;
+
+  /* Spacing (base 4, no 12px step) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Shape */
+  --radius-chip: 12px;
+  --radius-card: 16px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* Elevation */
+  --shadow-1: 0 1px 2px rgb(16 24 40 / 0.06), 0 1px 3px rgb(16 24 40 / 0.1);
+  --shadow-2: 0 4px 12px rgb(16 24 40 / 0.16);
+
+  /* Type */
+  --font-heading: Sora, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --text-display: clamp(2rem, 1.4rem + 2.4vw, 2.5rem);
+  --text-heading: 1.5rem;
+  --text-body: 1rem;
+  --text-label: 0.875rem;
+
+  /* Targets */
+  --target-min: 48px;
 }
 
 html {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: var(--text);
-  background: var(--background);
-  line-height: 1.5;
+  color-scheme: light;
+  /* Justified exception (UI-SPEC Spacing Scale): 64px sticky header plus 16px of breathing room. */
+  scroll-padding-top: 80px;
 }
 
 body {
   margin: 0;
-  padding: 1rem;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-white);
 }
 
-.skip-link {
-  position: absolute;
-  left: -999px;
-  top: 0;
-  padding: 0.5rem 1rem;
-  background: var(--background);
-  color: var(--text);
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--color-navy-900);
 }
 
-.skip-link:focus {
-  left: 0;
-  z-index: 1;
+h1 {
+  font-size: var(--text-display);
+  line-height: 1.2;
 }
 
+h2 {
+  font-size: var(--text-heading);
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: var(--text-body);
+  line-height: 1.5;
+}
+
+p {
+  margin: 0;
+  max-width: 65ch;
+  text-align: start;
+}
+
+p + p {
+  margin-top: 2em;
+}
+
+main:focus,
+section:focus,
+h1:focus,
+h2:focus {
+  outline: none;
+}
+
+/* Focus: 3px ring with 2px offset, never removed without this replacement. */
 :focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--focus-light);
   outline-offset: 2px;
 }
 
-nav a {
-  margin-right: 1rem;
+.on-dark :focus-visible {
+  outline-color: var(--focus-dark);
+}
+
+/* Skip link: first in the tab order, off-screen until focused. */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: var(--space-sm);
+  z-index: 20;
+  padding: var(--space-sm) var(--space-md);
+  min-height: var(--target-min);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-navy-900);
+  color: var(--color-white);
+  font-size: var(--text-label);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  left: var(--space-md);
+  outline: 3px solid var(--focus-dark);
+  outline-offset: 2px;
+}
+
+/* Layout */
+.container {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--space-md);
+}
+
+.section {
+  padding-block: var(--space-2xl);
+}
+
+.section-alt {
+  background: var(--color-surface-alt);
+}
+
+/* Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-white);
+}
+
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  min-height: var(--space-3xl);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  font-family: var(--font-heading);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  color: var(--color-navy-900);
+  text-decoration: none;
+}
+
+.lang-switch {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.lang-switch a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: 0 var(--space-sm);
+  font-size: var(--text-label);
+  font-weight: 400;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.lang-switch a:hover {
+  color: var(--color-navy-700);
+  text-decoration: underline;
+}
+
+.lang-switch a[aria-current="page"] {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: 0 var(--space-lg);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: normal;
+  text-align: center;
+  text-decoration: none;
+  transition: color 150ms ease-out, background-color 150ms ease-out;
+}
+
+.btn-primary {
+  width: 100%;
+  background-color: var(--color-navy-900);
+  color: var(--color-white);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-navy-700);
+}
+
+.btn-primary:active {
+  background-image: linear-gradient(rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.08));
+}
+
+.btn-primary-dark {
+  width: 100%;
+  background-color: var(--color-lime-400);
+  color: var(--color-navy-900);
+}
+
+.btn-primary-dark:hover {
+  background-color: var(--color-lime-300);
+}
+
+.btn-primary-dark:active {
+  background-image: linear-gradient(rgb(11 31 58 / 0.08), rgb(11 31 58 / 0.08));
+}
+
+/* Hero */
+.hero {
+  padding-block: var(--space-2xl);
+}
+
+.hero p {
+  margin-top: var(--space-lg);
+}
+
+.hero .btn {
+  margin-top: var(--space-xl);
+}
+
+.hero .demo-notice {
+  margin-top: var(--space-lg);
+  font-size: var(--text-label);
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+/* Download */
+.download-column {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.download-column p {
+  margin-top: var(--space-md);
+}
+
+.card-dark {
+  box-sizing: border-box;
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  border-radius: var(--radius-xl);
+  background: var(--color-navy-900);
+  color: var(--color-white);
+}
+
+.card-dark .status {
+  margin-top: var(--space-md);
+  font-size: var(--text-label);
+  font-weight: 400;
+  color: var(--color-on-navy-muted);
+}
+
+/* Older engines drop this rule and keep the explanation visible. */
+.card-dark:not(:has([data-placeholder])) .status {
+  display: none;
+}
+
+/* Footer */
+.site-footer {
+  padding-block: var(--space-2xl);
+  background: var(--color-navy-900);
+  color: var(--color-white);
+}
+
+.site-footer p {
+  font-size: var(--text-label);
+  color: var(--color-on-navy-muted);
+}
+
+@media (min-width: 600px) {
+  .container {
+    padding-inline: var(--space-lg);
+  }
+
+  .section,
+  .hero,
+  .site-footer {
+    padding-block: var(--space-3xl);
+  }
+
+  .btn-primary,
+  .btn-primary-dark {
+    width: auto;
+  }
+
+  .card-dark {
+    padding: var(--space-2xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  .download-column {
+    max-width: 800px;
+  }
+}
+
+/* Motion: smooth scrolling only for visitors who did not ask for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
