@@ -1,4 +1,71 @@
 /* LatiFi landing styles. Own Material Design tokens, light theme only (UI-SPEC, Phase 6). */
+
+/* Fonts: self-hosted variable woff2 from css/fonts (Fontsource 5.3.0, SIL OFL 1.1, checksums in
+   css/fonts/CHECKSUMS.txt). The page uses Sora 600, Inter 400 and Inter 600. */
+@font-face {
+  font-family: Sora;
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("fonts/sora-latin-ext-wght-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: Sora;
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("fonts/sora-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("fonts/inter-latin-ext-wght-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("fonts/inter-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Metric-matched fallbacks so the swap does not shift the layout. Inputs are from
+   @capsizecss/metrics 4.4.0 (data files read as text, never executed):
+     Arial regular: xWidthAvg 913, unitsPerEm 2048
+     Sora 600:      xWidthAvg 513, unitsPerEm 1000, ascent 970, descent -290, lineGap 0
+     Inter 400:     xWidthAvg 978, unitsPerEm 2048, ascent 1984, descent -494, lineGap 0
+   size-adjust = (xWidthAvg / unitsPerEm of the web font) / (913 / 2048 of Arial)
+   each override = metric / (unitsPerEm * size-adjust)
+   Sora:  0.513 / 0.4458 = 115.07%; ascent 970 / (1000 * 1.1507) = 84.29%; descent 290 / (1000 * 1.1507) = 25.20%
+   Inter: 0.4775 / 0.4458 = 107.12%; ascent 1984 / (2048 * 1.0712) = 90.44%; descent 494 / (2048 * 1.0712) = 22.52%
+   Inter 600 would need 109.31%; body weight 400 dominates, so one face covers both. */
+@font-face {
+  font-family: "Sora Fallback";
+  src: local("Arial");
+  size-adjust: 115.07%;
+  ascent-override: 84.29%;
+  descent-override: 25.2%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial");
+  size-adjust: 107.12%;
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0%;
+}
+
 :root {
   /* Color */
   --color-white: #ffffff;
@@ -37,8 +104,8 @@
   --shadow-2: 0 4px 12px rgb(16 24 40 / 0.16);
 
   /* Type */
-  --font-heading: Sora, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-body: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: Sora, "Sora Fallback", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: Inter, "Inter Fallback", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --text-display: clamp(2rem, 1.4rem + 2.4vw, 2.5rem);
   --text-heading: 1.5rem;
   --text-body: 1rem;

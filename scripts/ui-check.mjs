@@ -161,8 +161,11 @@ async function newPage(connection, shotsDir) {
   const send = (method, params) => connection.send(method, params, sessionId);
 
   const errors = [];
+  const requested = [];
   connection.on(sessionId, (method, params) => {
-    if (method === 'Runtime.exceptionThrown') {
+    if (method === 'Network.requestWillBeSent') {
+      requested.push(params.request.url);
+    } else if (method === 'Runtime.exceptionThrown') {
       const details = params.exceptionDetails || {};
       errors.push(`exception: ${(details.exception && details.exception.description) || details.text}`);
     } else if (method === 'Runtime.consoleAPICalled' && params.type === 'error') {
@@ -316,6 +319,7 @@ async function newPage(connection, shotsDir) {
       return file;
     },
     consoleErrors: () => errors.slice(),
+    requestedUrls: () => requested.slice(),
   };
 
   const dispose = async () => {
@@ -516,6 +520,44 @@ function makeScenarios(base) {
       assert(state.display !== null && state.display !== 'none' && state.height > 0, `${lang.code}: status line is not visible`);
       assert(state.text === STATUS_TEXT[lang.code], `${lang.code}: status text is "${state.text}"`);
     }
+  });
+
+  scenario('fonts-loaded', async (t) => {
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      // Wait for the faces the page actually used, then ask the browser what it holds.
+      await t.evaluate('document.fonts.ready.then(() => true)');
+      const state = await t.evaluate(`({
+        sora600: document.fonts.check('600 16px Sora'),
+        inter400: document.fonts.check('400 16px Inter'),
+        inter600: document.fonts.check('600 16px Inter'),
+        loaded: [...document.fonts].filter((face) => face.status === 'loaded').map((face) => face.family).sort(),
+        h1: getComputedStyle(document.querySelector('h1')).fontFamily,
+        body: getComputedStyle(document.body).fontFamily,
+      })`);
+      assert(state.sora600, `${lang.code}: 600 16px Sora is not loaded`);
+      assert(state.inter400, `${lang.code}: 400 16px Inter is not loaded`);
+      assert(state.inter600, `${lang.code}: 600 16px Inter is not loaded`);
+      assert(state.loaded.includes('Sora') && state.loaded.includes('Inter'),
+        `${lang.code}: no loaded Sora or Inter face (loaded: ${state.loaded.join(', ') || 'none'})`);
+      assert(/^"?Sora"?\s*,/.test(state.h1), `${lang.code}: h1 font stack is ${state.h1}`);
+      assert(/^"?Inter"?\s*,/.test(state.body), `${lang.code}: body font stack is ${state.body}`);
+    }
+  });
+
+  scenario('no-external-requests', async (t) => {
+    const origin = new URL(base).origin;
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      await t.evaluate('document.fonts.ready.then(() => true)');
+    }
+    const urls = t.requestedUrls();
+    assert(urls.length > 0, 'no network request was recorded');
+    // about: and data: URLs never leave the browser. Everything else must stay on the local origin.
+    const external = urls.filter((url) => !/^(about|data):/.test(url) && new URL(url).origin !== origin);
+    assert(external.length === 0, `requests outside ${origin}: ${external.join(', ')}`);
+    const fonts = urls.filter((url) => url.endsWith('.woff2'));
+    assert(fonts.length > 0, 'no font request was recorded, the check cannot prove the fonts are local');
   });
 
   return scenarios;
