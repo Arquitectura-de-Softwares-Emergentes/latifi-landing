@@ -55,6 +55,12 @@ jobs:
       - name: Guard self-test
         run: bash scripts/check-i18n-a11y.test.sh
 
+      - name: CSP guard
+        run: bash scripts/check-csp.sh
+
+      - name: CSP guard self-test
+        run: bash scripts/check-csp.test.sh
+
       - name: Check local links and fragments (offline)
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
