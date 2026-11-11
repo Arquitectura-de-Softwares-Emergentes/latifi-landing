@@ -455,6 +455,8 @@ function makeScenarios(base, siteDir) {
     await t.evaluate("localStorage.setItem('latifi.lang', 'es')");
     await t.blank();
     await t.open(base + '#download');
+    // The browser scrolls to the hash with smooth scrolling, so wait for it before measuring.
+    await t.settleScroll();
     let state = await t.evaluate(`({ path: location.pathname, hash: location.hash,
       visible: !!document.getElementById('descarga') && document.getElementById('descarga').getBoundingClientRect().top < innerHeight })`);
     assert(state.path.endsWith('/es/'), `en#download with es stored ended on ${state.path}`);
@@ -464,6 +466,7 @@ function makeScenarios(base, siteDir) {
     await t.evaluate("localStorage.setItem('latifi.lang', 'en')");
     await t.blank();
     await t.open(base + 'es/#descarga');
+    await t.settleScroll();
     state = await t.evaluate(`({ path: location.pathname, hash: location.hash,
       visible: !!document.getElementById('download') && document.getElementById('download').getBoundingClientRect().top < innerHeight })`);
     assert(!state.path.includes('/es/'), `es#descarga with en stored ended on ${state.path}`);
@@ -942,7 +945,7 @@ function makeScenarios(base, siteDir) {
     for (const lang of LANGS) {
       await t.open(base + lang.path, { width: 390, height: 844 });
       const state = await t.evaluate(`(() => {
-        const links = [...document.querySelectorAll('.main-nav a, .lang-switch a')];
+        const links = [...document.querySelectorAll('.site-header .main-nav a, .site-header .lang-switch a')];
         const shown = (el) => { const r = el.getBoundingClientRect(); return getComputedStyle(el).display !== 'none' && r.width > 0 && r.height > 0; };
         return {
           jsClass: document.documentElement.classList.contains('js'),
