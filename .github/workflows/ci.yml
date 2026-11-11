@@ -26,22 +26,23 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      # Nu HTML Checker. The asset id selects one exact published file and the
-      # sha256 is verified before the jar runs (T-05-01). The release was
-      # published on 2026-10-12 (same date as nu.validator:validator 26.10.12
-      # on Maven Central). A different file fails the check; it never runs.
+      # Nu HTML Checker. The pin is by immutable release tag (20.6.30, the
+      # newest versioned release that ships a runnable jar), not by the rolling
+      # "latest" asset id, which GitHub replaces and which then returns 404.
+      # The sha256 of the zip is verified before anything is extracted or run
+      # (T-05-01). A different file fails the check; it never runs. The Maven
+      # Central nu.validator:validator artifact is a thin library jar with no
+      # Main-Class, so it cannot be used with java -jar.
       - name: Download and verify Nu HTML Checker
         env:
-          GH_TOKEN: ${{ github.token }}
-          VNU_ASSET_ID: "634456536"
-          VNU_SHA256: 19f89e204cb881e2d88c5d0cd451df6c1ee8334e7fe626f6694b64a129f6a813
+          VNU_TAG: "20.6.30"
+          VNU_ZIP_SHA256: f6dc1464229756f582bdd6c083df11ec13e0d7389dd50b56e63133aa8b0dd200
         run: |
           curl -fsSL \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/octet-stream" \
-            -o "${RUNNER_TEMP}/vnu.jar" \
-            "https://api.github.com/repos/validator/validator/releases/assets/${VNU_ASSET_ID}"
-          echo "${VNU_SHA256}  ${RUNNER_TEMP}/vnu.jar" | sha256sum -c -
+            -o "${RUNNER_TEMP}/vnu.zip" \
+            "https://github.com/validator/validator/releases/download/${VNU_TAG}/vnu.jar_${VNU_TAG}.zip"
+          echo "${VNU_ZIP_SHA256}  ${RUNNER_TEMP}/vnu.zip" | sha256sum -c -
+          unzip -q -j -o "${RUNNER_TEMP}/vnu.zip" dist/vnu.jar -d "${RUNNER_TEMP}"
 
       - name: Validate HTML with the Nu HTML Checker
         run: |
