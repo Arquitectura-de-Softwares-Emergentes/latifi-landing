@@ -229,20 +229,37 @@ h2:focus {
   background: var(--color-surface-alt);
 }
 
-/* Header */
+/* Header. Without the js class the header scrolls with the page and the nav is a visible,
+   wrapped list. With it the header is sticky and, below the full-menu breakpoint (1024px,
+   the same value as FULL_MENU_MIN in js/main.js), the nav lives in a disclosure panel. */
 .site-header {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 10;
   background: var(--color-white);
+  transition: box-shadow 150ms ease-out;
+}
+
+.js .site-header {
+  position: sticky;
+  top: 0;
+}
+
+.site-header.is-scrolled {
+  box-shadow: var(--shadow-2);
 }
 
 .header-bar {
+  position: relative;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-md);
+  gap: var(--space-sm) var(--space-md);
   min-height: var(--space-3xl);
+}
+
+.js .header-bar {
+  flex-wrap: nowrap;
 }
 
 .logo {
@@ -250,15 +267,103 @@ h2:focus {
   align-items: center;
   min-height: var(--target-min);
   min-width: var(--target-min);
-  font-family: var(--font-heading);
-  font-size: var(--text-heading);
-  font-weight: 600;
+}
+
+.logo img {
+  display: block;
+  min-height: 32px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Menu button: only exists for visitors with scripts, only below the full-menu breakpoint. */
+.menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--target-min);
+  height: var(--target-min);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background-color: transparent;
   color: var(--color-navy-900);
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.js .menu-toggle {
+  display: inline-flex;
+}
+
+.menu-toggle:hover {
+  background-color: var(--color-soft);
+}
+
+.menu-toggle .icon-close,
+.menu-toggle[aria-expanded="true"] .icon-menu {
+  display: none;
+}
+
+.menu-toggle[aria-expanded="true"] .icon-close {
+  display: block;
+}
+
+.site-nav {
+  display: flex;
+  flex: 1 0 100%;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-md);
+}
+
+/* Panel under the 64px header, over the page. */
+.js .site-nav {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  background: var(--color-white);
+  box-shadow: var(--shadow-2);
+}
+
+.js .site-nav:not([data-open]) {
+  display: none;
+}
+
+.main-nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.main-nav a:not(.btn) {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: var(--target-min);
+  padding: 0 var(--space-sm);
+  color: var(--color-text);
+  font-size: var(--text-label);
+  font-weight: 600;
   text-decoration: none;
+  transition: color 150ms ease-out;
+}
+
+.main-nav a:not(.btn):hover {
+  color: var(--color-navy-700);
+  text-decoration: underline;
 }
 
 .lang-switch {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-sm);
 }
 
@@ -274,6 +379,7 @@ h2:focus {
   font-weight: 400;
   color: var(--color-text);
   text-decoration: none;
+  transition: color 150ms ease-out;
 }
 
 .lang-switch a:hover {
@@ -712,6 +818,29 @@ h2:focus {
 }
 
 @media (min-width: 1024px) {
+  .js .menu-toggle {
+    display: none;
+  }
+
+  .site-nav,
+  .js .site-nav,
+  .js .site-nav:not([data-open]) {
+    position: static;
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .main-nav ul {
+    flex-direction: row;
+    align-items: center;
+  }
+
   .download-column {
     max-width: 800px;
   }

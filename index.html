@@ -39,11 +39,26 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header">
     <div class="container header-bar">
-      <a class="logo" href="index.html" aria-label="LatiFi, home">LatiFi</a>
-      <nav class="lang-switch" aria-label="Language">
-        <a href="index.html" hreflang="en" lang="en" aria-current="page">English</a>
-        <a href="es/index.html" hreflang="es-419" lang="es-419">Español</a>
-      </nav>
+      <a class="logo" href="index.html"><img src="img/logo.svg" alt="LatiFi, home" width="124" height="40"></a>
+      <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu" data-label-open="Open menu" data-label-close="Close menu">
+        <svg class="icon icon-menu" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#menu"></use></svg>
+        <svg class="icon icon-close" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#close"></use></svg>
+      </button>
+      <div id="site-nav" class="site-nav">
+        <nav class="main-nav" aria-label="Main">
+          <ul>
+            <li><a href="#how-it-works">How it works</a></li>
+            <li><a href="#benefits">Benefits</a></li>
+            <li><a href="#security">Security</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a class="btn btn-primary" href="#download">Get the app</a></li>
+          </ul>
+        </nav>
+        <nav class="lang-switch" aria-label="Language">
+          <a href="index.html" hreflang="en" lang="en" aria-current="page">English</a>
+          <a href="es/index.html" hreflang="es-419" lang="es-419">Español</a>
+        </nav>
+      </div>
     </div>
   </header>
   <main id="main" tabindex="-1">

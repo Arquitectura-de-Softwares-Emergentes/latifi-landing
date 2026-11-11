@@ -314,6 +314,83 @@ function initVideo() {
   }
 }
 
+// Menu disclosure (header). Below FULL_MENU_MIN the Main nav and the language switch live in a
+// panel that the menu button opens. It is a disclosure, not a modal: no focus trap. The labels of
+// the button come from data attributes, so no visible string lives in this script.
+// FULL_MENU_MIN must equal the full-menu media query in css/main.css.
+const FULL_MENU_MIN = 1024;
+
+function initMenu() {
+  const button = document.getElementById('menu-toggle');
+  const panel = document.getElementById('site-nav');
+  if (!button || !panel) {
+    return;
+  }
+  const wide = window.matchMedia('(min-width: ' + FULL_MENU_MIN + 'px)');
+  const isOpen = () => button.getAttribute('aria-expanded') === 'true';
+
+  // One place changes every part of the state, so the attributes can never disagree.
+  const setOpen = (open) => {
+    button.setAttribute('aria-expanded', open ? 'true' : 'false');
+    const label = button.getAttribute(open ? 'data-label-close' : 'data-label-open');
+    if (label) {
+      button.setAttribute('aria-label', label);
+    }
+    if (open) {
+      panel.setAttribute('data-open', '');
+    } else {
+      panel.removeAttribute('data-open');
+    }
+    panel.hidden = wide.matches ? false : !open;
+  };
+
+  button.addEventListener('click', () => {
+    setOpen(!isOpen());
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && isOpen()) {
+      setOpen(false);
+      button.focus();
+    }
+  });
+  panel.addEventListener('click', (event) => {
+    if (isOpen() && event.target.closest('a')) {
+      setOpen(false);
+    }
+  });
+  wide.addEventListener('change', () => {
+    setOpen(false);
+  });
+  setOpen(false);
+}
+
+// Runs fn at most once per animation frame while the page scrolls.
+function onScrollFrame(fn) {
+  let queued = false;
+  window.addEventListener('scroll', () => {
+    if (queued) {
+      return;
+    }
+    queued = true;
+    window.requestAnimationFrame(() => {
+      queued = false;
+      fn();
+    });
+  }, { passive: true });
+  fn();
+}
+
+// The header gets its level 2 shadow once the page has scrolled a little.
+function initHeaderShadow() {
+  const header = document.querySelector('.site-header');
+  if (!header) {
+    return;
+  }
+  onScrollFrame(() => {
+    header.classList.toggle('is-scrolled', window.scrollY > 8);
+  });
+}
+
 document.addEventListener('click', (event) => {
   onLanguageClick(event);
   onAnchorClick(event);
@@ -323,6 +400,8 @@ document.addEventListener('click', (event) => {
 document.addEventListener(VIDEO_REFRESH_EVENT, initVideo);
 
 reconcileHash();
+initMenu();
+initHeaderShadow();
 initTabs();
 initVideo();
 

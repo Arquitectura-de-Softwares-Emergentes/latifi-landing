@@ -1,7 +1,7 @@
 // ui-check.mjs: drive the staged site in headless Chrome over the DevTools Protocol.
 // Usage: node scripts/ui-check.mjs [--shots DIR] [scenario ...]
 //   scenario names select a subset; without names every scenario runs.
-//   --shots DIR  also writes PNG screenshots (1280x800 and 320x640, both languages) into DIR.
+//   --shots DIR  also writes PNG screenshots (1280, 1024, 600 and 320 wide, both languages) into DIR.
 // Env:   CHROME_PATH
 //
 // Node built-ins plus the global WebSocket and fetch only. Each scenario runs in its own
@@ -358,8 +358,8 @@ function assert(condition, message) {
 // ---------------------------------------------------------------------------
 
 const LANGS = [
-  { code: 'en', path: '', section: 'download', label: 'Get the app' },
-  { code: 'es', path: 'es/', section: 'descarga', label: 'Descargar la app' },
+  { code: 'en', path: '', section: 'download', label: 'Get the app', benefits: 'benefits', menuOpen: 'Open menu', menuClose: 'Close menu' },
+  { code: 'es', path: 'es/', section: 'descarga', label: 'Descargar la app', benefits: 'beneficios', menuOpen: 'Abrir menú', menuClose: 'Cerrar menú' },
 ];
 
 const STATUS_TEXT = {
@@ -806,6 +806,161 @@ function makeScenarios(base, siteDir) {
     }
   });
 
+  // ---- Header and menu (plan 06-04) ----
+
+  const viewport = (t, width, height) => t.cdp('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
+
+  const menuState = (t) => t.evaluate(`(() => {
+    const button = document.getElementById('menu-toggle');
+    const panel = document.getElementById('site-nav');
+    const b = button.getBoundingClientRect();
+    const p = panel.getBoundingClientRect();
+    return {
+      expanded: button.getAttribute('aria-expanded'),
+      label: button.getAttribute('aria-label'),
+      controls: button.getAttribute('aria-controls'),
+      buttonDisplay: getComputedStyle(button).display,
+      buttonW: Math.round(b.width), buttonH: Math.round(b.height),
+      panelDisplay: getComputedStyle(panel).display,
+      panelHeight: p.height,
+      panelHidden: panel.hidden,
+      open: panel.hasAttribute('data-open'),
+      activeId: document.activeElement.id,
+      inPanel: panel.contains(document.activeElement),
+      hash: location.hash,
+    };
+  })()`);
+
+  scenario('menu-disclosure', async (t) => {
+    for (const lang of LANGS) {
+      await t.open(base + lang.path, { width: 390, height: 844 });
+      let state = await menuState(t);
+      assert(state.buttonDisplay !== 'none' && state.buttonW === 48 && state.buttonH === 48, `${lang.code}: menu button is ${state.buttonW} by ${state.buttonH} (${state.buttonDisplay}) at 390px`);
+      assert(state.controls === 'site-nav', `${lang.code}: aria-controls is ${state.controls}`);
+      assert(state.expanded === 'false' && state.label === lang.menuOpen, `${lang.code}: closed state is ${state.expanded} "${state.label}"`);
+      assert(state.panelDisplay === 'none', `${lang.code}: the closed panel is displayed (${state.panelDisplay})`);
+
+      // Closed panel: Tab from the button never lands inside it.
+      await t.evaluate("document.getElementById('menu-toggle').focus()");
+      for (let i = 0; i < 3; i += 1) {
+        await t.press('Tab');
+        state = await menuState(t);
+        assert(!state.inPanel, `${lang.code}: Tab reached the closed panel`);
+      }
+
+      // Open with the pointer.
+      await t.click('#menu-toggle');
+      state = await menuState(t);
+      assert(state.expanded === 'true' && state.label === lang.menuClose, `${lang.code}: open state is ${state.expanded} "${state.label}"`);
+      assert(state.panelDisplay !== 'none' && state.panelHeight > 0 && state.open && !state.panelHidden, `${lang.code}: the open panel is not shown`);
+      const linkCount = await t.evaluate("document.querySelectorAll('#site-nav .main-nav a').length");
+      assert(linkCount === 5, `${lang.code}: ${linkCount} Main nav links, expected 5`);
+
+      // Escape closes the panel and returns focus to the button.
+      await t.evaluate("document.querySelector('#site-nav .main-nav a').focus()");
+      await t.press('Escape');
+      state = await menuState(t);
+      assert(state.expanded === 'false' && state.panelDisplay === 'none', `${lang.code}: Escape did not close the panel`);
+      assert(state.activeId === 'menu-toggle', `${lang.code}: after Escape focus is on "${state.activeId}", not the menu button`);
+
+      // Keyboard opening: Enter on the button.
+      await t.press('Enter');
+      state = await menuState(t);
+      assert(state.expanded === 'true', `${lang.code}: Enter on the button did not open the panel`);
+      assert(!state.inPanel, `${lang.code}: opening moved focus into the panel (a disclosure does not trap or move focus)`);
+
+      // Activating a link closes the panel and jumps to that section.
+      await t.click(`#site-nav a[href="#${lang.benefits}"]`);
+      await t.waitFor(`location.hash === '#${lang.benefits}'`, `${lang.code}: hash #${lang.benefits}`);
+      state = await menuState(t);
+      assert(state.expanded === 'false' && state.panelDisplay === 'none', `${lang.code}: a link did not close the panel`);
+      await t.settleScroll();
+
+      // Resizing to the full-menu width resets the panel and takes the button out of the tab order.
+      await t.click('#menu-toggle');
+      assert((await menuState(t)).expanded === 'true', `${lang.code}: could not reopen before the resize`);
+      await viewport(t, 1280, 800);
+      await sleep(150);
+      state = await menuState(t);
+      assert(state.expanded === 'false' && state.label === lang.menuOpen && !state.open, `${lang.code}: widening did not reset the state (${state.expanded}, "${state.label}")`);
+      assert(state.panelDisplay !== 'none' && state.panelHeight > 0 && !state.panelHidden, `${lang.code}: the nav is not shown at 1280px`);
+      assert(state.buttonDisplay === 'none', `${lang.code}: the menu button is displayed at 1280px`);
+      await t.evaluate("document.getElementById('menu-toggle').focus()");
+      assert((await t.evaluate("document.activeElement.id")) !== 'menu-toggle', `${lang.code}: the hidden menu button can take focus`);
+      await viewport(t, 390, 844);
+      await sleep(150);
+      state = await menuState(t);
+      assert(state.expanded === 'false' && state.panelDisplay === 'none', `${lang.code}: narrowing again did not leave the panel closed`);
+    }
+  });
+
+  scenario('header-fit', async (t) => {
+    for (const lang of LANGS) {
+      for (const width of [1024, 1100, 1280]) {
+        await t.open(base + lang.path, { width, height: 800 });
+        const fit = await t.evaluate(`(() => {
+          const header = document.querySelector('.site-header');
+          const shown = (el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'; };
+          const items = [...header.querySelectorAll('a, button')].filter(shown);
+          const row = [...header.querySelectorAll('.main-nav a, .lang-switch a')];
+          const centers = row.map((el) => { const r = el.getBoundingClientRect(); return r.top + r.height / 2; });
+          const overlaps = [];
+          for (let i = 0; i < items.length; i += 1) {
+            for (let j = i + 1; j < items.length; j += 1) {
+              const a = items[i].getBoundingClientRect();
+              const b = items[j].getBoundingClientRect();
+              const w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+              const h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+              if (w > 0.5 && h > 0.5) { overlaps.push(items[i].textContent.trim() + ' / ' + items[j].textContent.trim()); }
+            }
+          }
+          const right = Math.max(...items.map((el) => el.getBoundingClientRect().right));
+          return {
+            overflow: document.documentElement.scrollWidth > innerWidth,
+            rowCount: row.length,
+            spread: Math.max(...centers) - Math.min(...centers),
+            overlaps,
+            right, inner: innerWidth,
+            height: header.getBoundingClientRect().height,
+            menuButton: getComputedStyle(document.getElementById('menu-toggle')).display,
+          };
+        })()`);
+        const where = `${lang.code} at ${width}px`;
+        assert(!fit.overflow, `${where}: horizontal scroll`);
+        assert(fit.rowCount === 7, `${where}: ${fit.rowCount} header links, expected 5 Main nav and 2 language`);
+        assert(fit.spread <= 2, `${where}: the nav and language links are ${fit.spread.toFixed(1)}px apart vertically, not on one row`);
+        assert(fit.overlaps.length === 0, `${where}: header items overlap: ${fit.overlaps.join(', ')}`);
+        assert(fit.right <= fit.inner, `${where}: header content ends at ${fit.right}, beyond ${fit.inner}`);
+        assert(Math.round(fit.height) === 64, `${where}: header height is ${fit.height}, expected 64`);
+        assert(fit.menuButton === 'none', `${where}: the menu button is displayed`);
+      }
+    }
+  });
+
+  scenario('menu-no-js', async (t) => {
+    await t.disableScripts(true);
+    for (const lang of LANGS) {
+      await t.open(base + lang.path, { width: 390, height: 844 });
+      const state = await t.evaluate(`(() => {
+        const links = [...document.querySelectorAll('.main-nav a, .lang-switch a')];
+        const shown = (el) => { const r = el.getBoundingClientRect(); return getComputedStyle(el).display !== 'none' && r.width > 0 && r.height > 0; };
+        return {
+          jsClass: document.documentElement.classList.contains('js'),
+          total: links.length,
+          visible: links.filter(shown).length,
+          button: getComputedStyle(document.getElementById('menu-toggle')).display,
+          overflow: document.documentElement.scrollWidth > innerWidth,
+          position: getComputedStyle(document.querySelector('.site-header')).position,
+        };
+      })()`);
+      assert(!state.jsClass, `${lang.code}: the js class is set with scripts disabled`);
+      assert(state.total === 7 && state.visible === 7, `${lang.code}: ${state.visible} of ${state.total} nav links visible without scripts`);
+      assert(state.button === 'none', `${lang.code}: the menu button is displayed without scripts (${state.button})`);
+      assert(!state.overflow, `${lang.code}: horizontal overflow at 390px without scripts`);
+      assert(state.position !== 'sticky', `${lang.code}: the tall no-script header is sticky`);
+    }
+  });
+
   return scenarios;
 }
 
@@ -817,7 +972,7 @@ async function takeShots(connection, base, shotsDir) {
   const { page, dispose } = await newPage(connection, shotsDir);
   const written = [];
   try {
-    for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 }]) {
+    for (const viewport of [{ width: 1280, height: 800 }, { width: 1024, height: 800 }, { width: 600, height: 800 }, { width: 320, height: 640 }]) {
       for (const lang of LANGS) {
         await page.open(base + lang.path, viewport);
         written.push(await page.screenshot(`${lang.code}-${viewport.width}`));
