@@ -314,6 +314,35 @@ function initVideo() {
   }
 }
 
+// Hero segment buttons ("I'm a borrower", "I'm a lender"): select that tab, scroll to How it
+// works and put keyboard focus on the selected tab. Without scripts the link is a plain jump.
+function onSegmentClick(event) {
+  if (event.defaultPrevented || event.button !== 0) {
+    return;
+  }
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+    return;
+  }
+  const link = event.target.closest('a[data-segment]');
+  if (!link) {
+    return;
+  }
+  const href = link.getAttribute('href') || '';
+  const section = href.length > 1 ? document.getElementById(href.slice(1)) : null;
+  const segment = link.getAttribute('data-segment');
+  const tab = document.getElementById(TAB_PREFIX + segment);
+  if (!section || !tab) {
+    return;
+  }
+  event.preventDefault();
+  selectTab(segment);
+  scrollToSection(section);
+  tab.focus({ preventScroll: true });
+  if (window.location.hash !== href) {
+    window.history.pushState(null, '', href);
+  }
+}
+
 // Menu disclosure (header). Below FULL_MENU_MIN the Main nav and the language switch live in a
 // panel that the menu button opens. It is a disclosure, not a modal: no focus trap. The labels of
 // the button come from data attributes, so no visible string lives in this script.
@@ -393,6 +422,7 @@ function initHeaderShadow() {
 
 document.addEventListener('click', (event) => {
   onLanguageClick(event);
+  onSegmentClick(event);
   onAnchorClick(event);
 });
 

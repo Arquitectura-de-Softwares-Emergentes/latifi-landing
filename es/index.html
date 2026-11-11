@@ -63,11 +63,38 @@
   </header>
   <main id="main" tabindex="-1">
     <section id="top" class="hero" tabindex="-1" aria-labelledby="hero-title">
-      <div class="container">
-        <h1 id="hero-title">Microcréditos entre personas, con una reputación que puedes verificar</h1>
-        <p>Pide un préstamo o fondea uno directamente. LatiFi no custodia tu dinero ni tus llaves, y cada prestamista ve tu historial de pagos antes de decidir.</p>
-        <a class="btn btn-primary" href="#descarga">Descargar la app</a>
+      <div class="container hero-layout">
+        <div class="hero-text">
+          <h1 id="hero-title">Microcréditos entre personas, con una reputación que puedes verificar</h1>
+          <p>Pide un préstamo o fondea uno directamente. LatiFi no custodia tu dinero ni tus llaves, y cada prestamista ve tu historial de pagos antes de decidir.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#descarga">Descargar la app</a>
+            <a class="btn btn-secondary" href="#como-funciona" data-segment="borrower">Soy prestatario</a>
+            <a class="btn btn-secondary" href="#como-funciona" data-segment="lender">Soy prestamista</a>
+          </div>
+        </div>
+        <ul class="chips" role="list">
+          <li class="chip"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="../img/icons.svg#shield"></use></svg>Tú guardas tus llaves</li>
+          <li class="chip"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="../img/icons.svg#visibility"></use></svg>Reputación visible para los prestamistas</li>
+          <li class="chip"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="../img/icons.svg#description"></use></svg>Reglas escritas en un contrato</li>
+          <li class="chip"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="../img/icons.svg#currency-exchange"></use></svg>Montos también en soles</li>
+        </ul>
         <p class="demo-notice">Demostración académica en una red de pruebas. El dinero de la app no tiene valor real.</p>
+        <article class="card" aria-labelledby="card-title">
+          <h2 id="card-title" class="card-title">Ejemplo de préstamo</h2>
+          <p class="card-note">Cifras ilustrativas, no son datos reales</p>
+          <dl class="card-fields">
+            <div><dt>Monto</dt><dd>100 dólares digitales de prueba</dd></div>
+            <div><dt>Plazo</dt><dd>90 días</dd></div>
+            <div><dt>Cuotas</dt><dd>3</dd></div>
+            <div><dt>Tasa</dt><dd>12&nbsp;% anual, la define quien pide</dd></div>
+          </dl>
+          <div class="card-progress">
+            <label for="loan-progress">2 de 3 cuotas pagadas</label>
+            <progress id="loan-progress" value="2" max="3">2 de 3</progress>
+          </div>
+          <span class="chip chip-paid"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="../img/icons.svg#check"></use></svg>Pagado</span>
+        </article>
       </div>
     </section>
     <section id="como-funciona" class="section section-alt" aria-labelledby="how-title">
@@ -246,8 +273,16 @@
     </section>
   </main>
   <footer class="site-footer on-dark">
-    <div class="container">
-      <p>SI728 Arquitecturas de Software Emergentes, UPC. Proyecto académico en una red de pruebas.</p>
+    <div class="container footer-layout">
+      <img class="footer-logo" src="../img/logo-on-dark.svg" alt="LatiFi" width="114" height="26">
+      <nav class="lang-switch lang-switch-footer" aria-label="Idioma (pie de página)">
+          <a href="../index.html" hreflang="en" lang="en">English</a>
+          <a href="index.html" hreflang="es-419" lang="es-419" aria-current="page">Español</a>
+      </nav>
+      <div class="footer-text">
+        <p>SI728 Arquitecturas de Software Emergentes, UPC. Proyecto académico en una red de pruebas.</p>
+        <p>Demostración académica en una red de pruebas. El dinero de la app no tiene valor real.</p>
+      </div>
     </div>
   </footer>
   <script type="module" src="../js/main.js"></script>

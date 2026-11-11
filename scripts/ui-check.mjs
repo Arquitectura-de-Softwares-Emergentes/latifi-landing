@@ -961,6 +961,155 @@ function makeScenarios(base, siteDir) {
     }
   });
 
+  // ---- Hero and footer (plan 06-04) ----
+
+  scenario('segment-buttons', async (t) => {
+    for (const lang of LANGS) {
+      for (const width of [1280, 390]) {
+        await t.open(base + lang.path, { width, height: 800 });
+        const where = `${lang.code} at ${width}px`;
+        const read = () => t.evaluate(`(() => {
+          const how = document.querySelector('section.section-alt');
+          const r = how.getBoundingClientRect();
+          const tab = document.activeElement;
+          const tr = tab.getBoundingClientRect();
+          const shown = (el) => !el.hidden && getComputedStyle(el).display !== 'none' && el.getBoundingClientRect().height > 0;
+          return {
+            hash: location.hash, activeId: tab.id,
+            selected: [...document.querySelectorAll('[role="tab"]')].filter((x) => x.getAttribute('aria-selected') === 'true').map((x) => x.id).join(),
+            borrower: shown(document.getElementById('panel-borrower')),
+            lender: shown(document.getElementById('panel-lender')),
+            sectionVisible: r.top < innerHeight && r.bottom > 0,
+            tabTop: tr.top, tabBottom: tr.bottom, viewport: innerHeight,
+          };
+        })()`);
+
+        await t.click('.hero [data-segment="lender"]');
+        await t.waitFor("location.hash.length > 1", `${where}: hash after the lender button`);
+        await t.settleScroll();
+        let state = await read();
+        assert(state.selected === 'tab-lender' && state.lender && !state.borrower, `${where}: the lender button left tab "${state.selected}" selected`);
+        assert(state.activeId === 'tab-lender', `${where}: focus is on "${state.activeId}" after the lender button, not #tab-lender`);
+        assert(state.sectionVisible, `${where}: How it works is not in view after the lender button`);
+        assert(state.tabTop >= 64 && state.tabBottom <= state.viewport, `${where}: the focused tab is hidden (${state.tabTop} to ${state.tabBottom})`);
+
+        await t.evaluate('window.scrollTo(0, 0)');
+        await t.settleScroll();
+        await t.click('.hero [data-segment="borrower"]');
+        await t.waitFor("document.activeElement.id === 'tab-borrower'", `${where}: focus on #tab-borrower`);
+        await t.settleScroll();
+        state = await read();
+        assert(state.selected === 'tab-borrower' && state.borrower && !state.lender, `${where}: the borrower button left tab "${state.selected}" selected`);
+        assert(state.sectionVisible, `${where}: How it works is not in view after the borrower button`);
+      }
+    }
+  });
+
+  scenario('hero-layout', async (t) => {
+    const measure = (t) => t.evaluate(`(() => {
+      const box = (el) => { const r = el.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width }; };
+      const container = document.querySelector('.hero .container');
+      const cs = getComputedStyle(container);
+      return {
+        text: box(document.querySelector('.hero-text')),
+        card: box(document.querySelector('.hero .card')),
+        buttons: [...document.querySelectorAll('.hero-actions .btn')].map(box),
+        chips: [...document.querySelectorAll('.hero .chips .chip')].map(box),
+        inner: container.getBoundingClientRect().width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight),
+      };
+    })()`);
+    for (const lang of LANGS) {
+      await t.open(base + lang.path, { width: 390, height: 844 });
+      let m = await measure(t);
+      let where = `${lang.code} at 390px`;
+      assert(m.buttons.length === 3 && m.chips.length === 4, `${where}: ${m.buttons.length} buttons and ${m.chips.length} chips`);
+      assert(m.card.top >= m.text.bottom - 1, `${where}: the card is not below the text`);
+      for (let i = 1; i < m.buttons.length; i += 1) {
+        assert(m.buttons[i].top >= m.buttons[i - 1].bottom, `${where}: buttons ${i} and ${i + 1} are not stacked`);
+      }
+      assert(m.buttons.every((b) => Math.abs(b.width - m.inner) <= 1), `${where}: the buttons are not full width (${m.buttons.map((b) => Math.round(b.width)).join(', ')} of ${Math.round(m.inner)})`);
+      assert(m.chips.every((c) => Math.abs(c.left - m.chips[0].left) <= 1) && m.chips.every((c, i) => i === 0 || c.top >= m.chips[i - 1].bottom), `${where}: the chips are not in one column`);
+
+      await t.open(base + lang.path, { width: 700, height: 900 });
+      m = await measure(t);
+      where = `${lang.code} at 700px`;
+      assert(m.buttons.every((b) => Math.abs(b.top - m.buttons[0].top) <= 1), `${where}: the buttons are not in a row`);
+      assert(Math.abs(m.chips[0].top - m.chips[1].top) <= 1 && m.chips[2].top > m.chips[0].bottom - 1 && Math.abs(m.chips[0].left - m.chips[2].left) <= 1, `${where}: the chips are not in two columns`);
+      assert(m.card.top >= m.text.bottom - 1, `${where}: the card is not below the text`);
+
+      await t.open(base + lang.path, { width: 1280, height: 800 });
+      m = await measure(t);
+      where = `${lang.code} at 1280px`;
+      assert(m.card.left >= m.text.right, `${where}: the card (left ${m.card.left}) does not sit beside the text (right ${m.text.right})`);
+      assert(m.chips.every((c) => Math.abs(c.top - m.chips[0].top) <= 2), `${where}: the four chips do not share one row`);
+    }
+  });
+
+  scenario('example-card', async (t) => {
+    const want = {
+      en: { title: 'Example loan', note: 'Illustrative figures, not real data', label: '2 of 3 installments paid', paid: 'Paid', terms: ['Amount', 'Term', 'Installments', 'Rate'] },
+      es: { title: 'Ejemplo de préstamo', note: 'Cifras ilustrativas, no son datos reales', label: '2 de 3 cuotas pagadas', paid: 'Pagado', terms: ['Monto', 'Plazo', 'Cuotas', 'Tasa'] },
+    };
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      const card = await t.evaluate(`(() => {
+        const el = document.querySelector('.card');
+        const bar = el.querySelector('progress');
+        const chip = el.querySelector('.chip-paid');
+        return {
+          cards: document.querySelectorAll('.card').length,
+          tag: el.tagName,
+          title: el.querySelector('.card-title').textContent.trim(),
+          titleTag: el.querySelector('.card-title').tagName,
+          note: el.querySelector('.card-note').textContent.trim(),
+          groups: [...el.querySelectorAll('dl > div')].map((g) => g.querySelector('dt').textContent.trim() + '|' + g.querySelector('dd').textContent.trim()),
+          value: bar.value, max: bar.max,
+          label: bar.labels.length ? bar.labels[0].textContent.trim() : null,
+          chip: chip ? chip.textContent.trim() : null,
+          chipIcon: chip ? !!chip.querySelector('svg') : false,
+          inputs: el.querySelectorAll('input, select, textarea, button, a').length,
+        };
+      })()`);
+      const w = want[lang.code];
+      assert(card.cards === 1 && card.tag === 'ARTICLE', `${lang.code}: ${card.cards} cards, first is ${card.tag}`);
+      assert(card.title === w.title && card.titleTag === 'H2', `${lang.code}: card title is ${card.titleTag} "${card.title}"`);
+      assert(card.note === w.note, `${lang.code}: card note is "${card.note}"`);
+      assert(card.groups.length === 4 && card.groups.map((g) => g.split('|')[0]).join() === w.terms.join(), `${lang.code}: card terms are ${card.groups.join(' ; ')}`);
+      assert(card.value === 2 && card.max === 3, `${lang.code}: progress is ${card.value} of ${card.max}`);
+      assert(card.label === w.label, `${lang.code}: progress label is "${card.label}"`);
+      assert(card.chip === w.paid && card.chipIcon, `${lang.code}: Paid chip is "${card.chip}" with icon ${card.chipIcon}`);
+      assert(card.inputs === 0, `${lang.code}: the example card holds ${card.inputs} interactive controls, it must be static`);
+    }
+  });
+
+  scenario('footer-links', async (t) => {
+    for (const lang of LANGS) {
+      for (const width of [390, 1280]) {
+        await t.open(base + lang.path, { width, height: 800 });
+        const where = `${lang.code} at ${width}px`;
+        const f = await t.evaluate(`(() => {
+          const footer = document.querySelector('.site-footer');
+          const nav = footer.querySelector('nav.lang-switch');
+          const header = document.querySelector('.site-header nav.lang-switch');
+          const logo = footer.querySelector('img');
+          return {
+            navLabel: nav ? nav.getAttribute('aria-label') : null,
+            headerLabel: header.getAttribute('aria-label'),
+            logo: logo ? { src: logo.getAttribute('src'), alt: logo.getAttribute('alt'), height: logo.getBoundingClientRect().height } : null,
+            heights: [...footer.querySelectorAll('a')].map((a) => Math.round(a.getBoundingClientRect().height)),
+            texts: [...footer.querySelectorAll('p')].map((p) => p.textContent.trim()),
+            bg: getComputedStyle(footer).backgroundColor,
+          };
+        })()`);
+        assert(f.navLabel && f.navLabel !== f.headerLabel, `${where}: footer language nav label "${f.navLabel}" must differ from the header one "${f.headerLabel}"`);
+        assert(f.logo && /img\/logo-on-dark\.svg$/.test(f.logo.src) && f.logo.alt === 'LatiFi' && f.logo.height >= 32, `${where}: footer logo is ${JSON.stringify(f.logo)}`);
+        assert(f.heights.length === 2 && f.heights.every((h) => h >= 48), `${where}: footer link heights ${f.heights.join(', ')}`);
+        assert(f.texts.length === 2 && f.texts.every((x) => x.length > 20), `${where}: footer text is ${JSON.stringify(f.texts)}`);
+        assert(f.bg === 'rgb(11, 31, 58)', `${where}: footer background is ${f.bg}, not Navy 900`);
+      }
+    }
+  });
+
   return scenarios;
 }
 

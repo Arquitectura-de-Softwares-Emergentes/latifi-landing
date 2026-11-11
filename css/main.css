@@ -712,19 +712,153 @@ h2:focus {
   padding-block: var(--space-2xl);
 }
 
-.hero p {
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+.hero-text p {
   margin-top: var(--space-lg);
 }
 
-.hero .btn {
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
   margin-top: var(--space-xl);
 }
 
-.hero .demo-notice {
-  margin-top: var(--space-lg);
+.hero-layout > .demo-notice {
+  margin: 0;
   font-size: var(--text-label);
   font-weight: 400;
   color: var(--color-muted);
+}
+
+/* Chips: icon plus text, never colour alone. Non-interactive, so 32px is enough. */
+.chips {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  box-sizing: border-box;
+  min-height: 32px;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-chip);
+  background: var(--color-soft);
+  color: var(--color-navy-900);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.chip .icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--color-navy-700);
+}
+
+.chip-paid {
+  display: inline-flex;
+  background: var(--color-green-50);
+  color: var(--color-green-600);
+}
+
+.chip-paid .icon {
+  color: var(--color-green-600);
+}
+
+/* Example loan card: static and labelled as illustrative. */
+.card {
+  box-sizing: border-box;
+  padding: var(--space-lg);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-card);
+  background: var(--color-white);
+  box-shadow: var(--shadow-1);
+}
+
+.card-title {
+  font-size: var(--text-body);
+  line-height: 1.5;
+}
+
+.card-note {
+  margin-top: var(--space-xs);
+  font-size: var(--text-label);
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+.card-fields {
+  margin: var(--space-md) 0 0;
+}
+
+.card-fields > div {
+  padding-block: var(--space-sm);
+  border-top: 1px solid var(--color-divider);
+}
+
+.card-fields dt {
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.card-fields dd {
+  margin: 0;
+}
+
+.card-progress {
+  display: grid;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.card-progress label {
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+
+.card-progress progress {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 8px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-soft);
+  color: var(--color-green-600);
+  overflow: hidden;
+}
+
+.card-progress progress::-webkit-progress-bar {
+  background: var(--color-soft);
+}
+
+.card-progress progress::-webkit-progress-value {
+  background: var(--color-green-600);
+  border-radius: var(--radius-pill);
+}
+
+.card-progress progress::-moz-progress-bar {
+  background: var(--color-green-600);
+  border-radius: var(--radius-pill);
+}
+
+.card > .chip-paid {
+  margin-top: var(--space-md);
 }
 
 /* Download */
@@ -765,9 +899,59 @@ h2:focus {
   color: var(--color-white);
 }
 
+.footer-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "logo"
+    "lang"
+    "text";
+  gap: var(--space-lg);
+  align-items: center;
+}
+
+.footer-logo {
+  grid-area: logo;
+  display: block;
+  width: auto;
+  height: 32px;
+  justify-self: start;
+}
+
+.lang-switch-footer {
+  grid-area: lang;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.site-footer .lang-switch a {
+  justify-content: flex-start;
+  color: var(--color-white);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.site-footer .lang-switch a[aria-current="page"] {
+  text-decoration-thickness: 2px;
+}
+
+.site-footer .lang-switch a:hover {
+  color: var(--color-lime-400);
+}
+
+.footer-text {
+  grid-area: text;
+}
+
 .site-footer p {
   font-size: var(--text-label);
   color: var(--color-on-navy-muted);
+}
+
+.footer-text p + p {
+  margin-top: var(--space-sm);
 }
 
 @media (min-width: 600px) {
@@ -815,11 +999,64 @@ h2:focus {
   .card-dark {
     padding: var(--space-2xl);
   }
+
+  .hero-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .chips {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-layout {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "logo lang"
+      "text text";
+  }
+
+  .lang-switch-footer {
+    flex-direction: row;
+  }
 }
 
 @media (min-width: 1024px) {
   .js .menu-toggle {
     display: none;
+  }
+
+  .hero-layout {
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--space-lg);
+    align-items: start;
+  }
+
+  .hero-text {
+    grid-column: 1 / 8;
+    grid-row: 1;
+  }
+
+  .hero-layout > .card {
+    grid-column: 8 / 13;
+    grid-row: 1;
+  }
+
+  .chips {
+    grid-column: 1 / 13;
+    grid-row: 2;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .hero-layout > .demo-notice {
+    grid-column: 1 / 13;
+    grid-row: 3;
+  }
+
+  .footer-layout {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "logo text lang";
+    column-gap: var(--space-xl);
   }
 
   .site-nav,
