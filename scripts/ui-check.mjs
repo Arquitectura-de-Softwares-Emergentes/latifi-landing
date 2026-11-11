@@ -152,6 +152,11 @@ const KEYS = {
   Tab: { key: 'Tab', code: 'Tab', keyCode: 9 },
   Enter: { key: 'Enter', code: 'Enter', keyCode: 13, text: '\r' },
   Escape: { key: 'Escape', code: 'Escape', keyCode: 27 },
+  Space: { key: ' ', code: 'Space', keyCode: 32, text: ' ' },
+  ArrowLeft: { key: 'ArrowLeft', code: 'ArrowLeft', keyCode: 37 },
+  ArrowRight: { key: 'ArrowRight', code: 'ArrowRight', keyCode: 39 },
+  Home: { key: 'Home', code: 'Home', keyCode: 36 },
+  End: { key: 'End', code: 'End', keyCode: 35 },
 };
 
 async function newPage(connection, shotsDir) {
@@ -558,6 +563,108 @@ function makeScenarios(base) {
     assert(external.length === 0, `requests outside ${origin}: ${external.join(', ')}`);
     const fonts = urls.filter((url) => url.endsWith('.woff2'));
     assert(fonts.length > 0, 'no font request was recorded, the check cannot prove the fonts are local');
+  });
+
+  // Reads the tab state the keyboard contract talks about.
+  const tabState = (t) => t.evaluate(`(() => {
+    const tabs = [...document.querySelectorAll('[role="tab"]')];
+    const panel = (id) => document.getElementById(id);
+    const shown = (el) => !el.hidden && getComputedStyle(el).display !== 'none' && el.getBoundingClientRect().height > 0;
+    return {
+      activeId: document.activeElement.id,
+      selected: tabs.filter((tab) => tab.getAttribute('aria-selected') === 'true').map((tab) => tab.id),
+      tabbable: tabs.filter((tab) => tab.getAttribute('tabindex') === '0').map((tab) => tab.id),
+      borrowerShown: shown(panel('panel-borrower')),
+      lenderShown: shown(panel('panel-lender')),
+    };
+  })()`);
+
+  scenario('tabs-keyboard', async (t) => {
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      const list = await t.evaluate(`(() => {
+        const el = document.querySelector('[role="tablist"]');
+        const r = el.getBoundingClientRect();
+        return { hidden: el.hidden, display: getComputedStyle(el).display, height: r.height,
+          tablists: document.querySelectorAll('[role="tablist"]').length,
+          label: el.getAttribute('aria-label'),
+          h2: document.getElementById('how-title').textContent.trim() };
+      })()`);
+      assert(list.tablists === 1, `${lang.code}: ${list.tablists} tablists`);
+      assert(!list.hidden && list.display !== 'none' && list.height > 0, `${lang.code}: the tablist is not visible with scripts on`);
+      assert(list.label === list.h2, `${lang.code}: tablist aria-label "${list.label}" differs from the H2 "${list.h2}"`);
+      let state = await tabState(t);
+      assert(state.selected.join() === 'tab-borrower', `${lang.code}: selected on load is ${state.selected.join() || 'none'}`);
+      assert(state.borrowerShown && !state.lenderShown, `${lang.code}: borrower panel ${state.borrowerShown}, lender panel ${state.lenderShown} on load`);
+      assert(state.tabbable.join() === 'tab-borrower', `${lang.code}: tabindex 0 on ${state.tabbable.join() || 'none'} on load`);
+
+      await t.evaluate("document.getElementById('tab-borrower').focus()");
+      const steps = [
+        ['ArrowRight', 'tab-lender'],
+        ['Home', 'tab-borrower'],
+        ['End', 'tab-lender'],
+        ['Home', 'tab-borrower'],
+        ['ArrowLeft', 'tab-lender'],
+        ['ArrowRight', 'tab-borrower'],
+      ];
+      for (const [key, expected] of steps) {
+        await t.press(key);
+        state = await tabState(t);
+        const other = expected === 'tab-lender' ? 'tab-borrower' : 'tab-lender';
+        assert(state.activeId === expected, `${lang.code}: after ${key} focus is on ${state.activeId}, expected ${expected}`);
+        assert(state.selected.join() === expected, `${lang.code}: after ${key} selected is ${state.selected.join() || 'none'}, expected ${expected}`);
+        assert(state.tabbable.join() === expected, `${lang.code}: after ${key} tabindex 0 is on ${state.tabbable.join() || 'none'} (other tab ${other} must be -1)`);
+        const wantLender = expected === 'tab-lender';
+        assert(state.lenderShown === wantLender && state.borrowerShown === !wantLender,
+          `${lang.code}: after ${key} the panels do not follow the selection`);
+      }
+
+      // Pointer activation selects too.
+      await t.click('#tab-lender');
+      state = await tabState(t);
+      assert(state.selected.join() === 'tab-lender' && state.lenderShown && !state.borrowerShown, `${lang.code}: clicking the lender tab did not select it`);
+    }
+  });
+
+  scenario('tabs-distinct-content', async (t) => {
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      const titles = await t.evaluate(`({
+        borrower: [...document.querySelectorAll('#panel-borrower .step h3')].map((h) => h.textContent.trim()),
+        lender: [...document.querySelectorAll('#panel-lender .step h3')].map((h) => h.textContent.trim()),
+      })`);
+      assert(titles.borrower.length === 3 && titles.lender.length === 3, `${lang.code}: step titles are ${titles.borrower.length} and ${titles.lender.length}, expected 3 and 3`);
+      const shared = titles.borrower.filter((title) => titles.lender.includes(title));
+      assert(shared.length === 0, `${lang.code}: both panels share the step title ${shared.join(' | ')}`);
+    }
+  });
+
+  scenario('no-js-panels', async (t) => {
+    await t.disableScripts(true);
+    for (const lang of LANGS) {
+      await t.open(base + lang.path, { width: 320, height: 568 });
+      const state = await t.evaluate(`(() => {
+        const box = (el) => { const r = el.getBoundingClientRect(); return { top: r.top, height: r.height, width: r.width }; };
+        const list = document.querySelector('[role="tablist"]');
+        const borrower = document.getElementById('panel-borrower');
+        const lender = document.getElementById('panel-lender');
+        const titles = [...document.querySelectorAll('.panel-title')];
+        return {
+          jsClass: document.documentElement.classList.contains('js'),
+          tablistDisplay: getComputedStyle(list).display,
+          borrower: box(borrower), lender: box(lender),
+          titles: titles.map((h) => ({ tag: h.tagName, display: getComputedStyle(h).display, height: h.getBoundingClientRect().height })),
+          overflow: document.documentElement.scrollWidth > innerWidth,
+        };
+      })()`);
+      assert(!state.jsClass, `${lang.code}: the js class is set with scripts disabled`);
+      assert(state.tablistDisplay === 'none', `${lang.code}: the tablist display is ${state.tablistDisplay} without scripts`);
+      assert(state.borrower.height > 0 && state.lender.height > 0, `${lang.code}: a panel has no height without scripts`);
+      assert(state.lender.top >= state.borrower.top + state.borrower.height - 1, `${lang.code}: the panels are not stacked`);
+      assert(state.titles.length === 2 && state.titles.every((h) => h.tag === 'H3' && h.display !== 'none' && h.height > 0),
+        `${lang.code}: the panel titles are not both visible H3 headings without scripts`);
+      assert(!state.overflow, `${lang.code}: horizontal overflow at 320px without scripts`);
+    }
   });
 
   return scenarios;

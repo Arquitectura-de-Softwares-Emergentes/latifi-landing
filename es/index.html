@@ -2,7 +2,7 @@
 <html lang="es-419">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-eCyzDbjwzonLJwFlbpChmcqdl5ewFoKbnCA9u2jzkH8='; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-eCyzDbjwzonLJwFlbpChmcqdl5ewFoKbnCA9u2jzkH8=' 'sha256-qOhFsq0QMV2REqNwk5hGH5bZE9SkX6gt6yeyKdYPv+U='; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LatiFi: microcréditos P2P con reputación verificable</title>
   <meta name="description" content="LatiFi conecta a prestatarios y prestamistas con microcréditos P2P sobre blockchain. No custodia tu dinero y muestra la reputación de cada solicitante.">
@@ -30,6 +30,7 @@
   <meta name="twitter:image:alt" content="Logotipo de LatiFi sobre un fondo azul marino oscuro">
   <link rel="preload" href="../css/fonts/sora-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../css/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <script>document.documentElement.classList.add("js")</script>
   <link rel="stylesheet" href="../css/main.css">
   <link rel="icon" type="image/svg+xml" href="../img/isotype.svg">
   <script>try{var l=localStorage.getItem("latifi.lang"),h=location.hash,m={"#como-funciona":"#how-it-works","#beneficios":"#benefits","#seguridad":"#security","#descarga":"#download"};if(l=="en")location.replace("../"+location.pathname.split("/").pop()+location.search+(m[h]||h))}catch(e){}</script>
@@ -52,6 +53,59 @@
         <p>Pide un préstamo o fondea uno directamente. LatiFi no custodia tu dinero ni tus llaves, y cada prestamista ve tu historial de pagos antes de decidir.</p>
         <a class="btn btn-primary" href="#descarga">Descargar la app</a>
         <p class="demo-notice">Demostración académica en una red de pruebas. El dinero de la app no tiene valor real.</p>
+      </div>
+    </section>
+    <section id="como-funciona" class="section section-alt" aria-labelledby="how-title">
+      <div class="container">
+        <h2 id="how-title" class="section-title">Cómo funciona LatiFi</h2>
+        <div class="tabs">
+          <div role="tablist" class="tablist" aria-label="Cómo funciona LatiFi" hidden>
+            <button type="button" role="tab" id="tab-borrower" class="tab" aria-selected="true" aria-controls="panel-borrower" tabindex="0">Para prestatarios</button>
+            <button type="button" role="tab" id="tab-lender" class="tab" aria-selected="false" aria-controls="panel-lender" tabindex="-1">Para prestamistas</button>
+          </div>
+          <div role="tabpanel" id="panel-borrower" class="tabpanel" aria-labelledby="tab-borrower" tabindex="0">
+            <h3 class="panel-title">Para prestatarios</h3>
+            <ol class="steps" role="list">
+              <li class="step">
+                <span class="step-number" aria-hidden="true">1</span>
+                <h3>Crea tu billetera.</h3>
+                <p>Crea una billetera en la app o importa la que ya tienes. Anotas una frase de recuperación y la guardas tú.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">2</span>
+                <h3>Publica tu solicitud.</h3>
+                <p>Elige el monto, la tasa, el plazo y el número de cuotas. Los prestamistas ven tu reputación junto a la solicitud.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">3</span>
+                <h3>Recibe y paga.</h3>
+                <p>Cuando un prestamista la fondea, el dinero llega a tu billetera. Paga cada cuota a tiempo para subir tu reputación.</p>
+              </li>
+            </ol>
+            <a class="btn btn-secondary" href="#descarga">Descargar la app</a>
+          </div>
+          <div role="tabpanel" id="panel-lender" class="tabpanel" aria-labelledby="tab-lender" tabindex="0">
+            <h3 class="panel-title">Para prestamistas</h3>
+            <ol class="steps" role="list">
+              <li class="step">
+                <span class="step-number" aria-hidden="true">1</span>
+                <h3>Conecta tu billetera.</h3>
+                <p>Crea o importa una billetera e inicia sesión firmando un mensaje. No hay contraseña que recordar.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">2</span>
+                <h3>Revisa las solicitudes abiertas.</h3>
+                <p>Filtra por riesgo, plazo y monto, y ordena por la reputación de quien pide.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">3</span>
+                <h3>Fondea y cobra.</h3>
+                <p>Fondea la solicitud que prefieras. Las cuotas llegan a tu billetera y sigues cada una en tu portafolio.</p>
+              </li>
+            </ol>
+            <a class="btn btn-secondary" href="#descarga">Descargar la app</a>
+          </div>
+        </div>
       </div>
     </section>
     <section id="descarga" class="section section-alt" aria-labelledby="download-title">

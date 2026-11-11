@@ -2,7 +2,7 @@
 <html lang="en-US">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-LMzUjf/FsWpM5ilnkLmPPHasFBCNMQdH0FYHB8I+grY='; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-LMzUjf/FsWpM5ilnkLmPPHasFBCNMQdH0FYHB8I+grY=' 'sha256-qOhFsq0QMV2REqNwk5hGH5bZE9SkX6gt6yeyKdYPv+U='; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LatiFi: P2P microloans with verifiable reputation</title>
   <meta name="description" content="LatiFi connects borrowers and lenders through blockchain-based P2P microloans. It never holds your funds and shows each applicant's reputation.">
@@ -30,6 +30,7 @@
   <meta name="twitter:image:alt" content="LatiFi logo on a dark navy background">
   <link rel="preload" href="css/fonts/sora-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="css/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <script>document.documentElement.classList.add("js")</script>
   <link rel="stylesheet" href="css/main.css">
   <link rel="icon" type="image/svg+xml" href="img/isotype.svg">
   <script>try{var l=localStorage.getItem("latifi.lang"),h=location.hash,m={"#how-it-works":"#como-funciona","#benefits":"#beneficios","#security":"#seguridad","#download":"#descarga"};if(l=="es")location.replace("es/"+location.pathname.split("/").pop()+location.search+(m[h]||h))}catch(e){}</script>
@@ -52,6 +53,59 @@
         <p>Ask for a loan or fund one directly. LatiFi never holds your money or your keys, and every lender sees your payment history before deciding.</p>
         <a class="btn btn-primary" href="#download">Get the app</a>
         <p class="demo-notice">Academic demo on a test network. The money in the app has no real value.</p>
+      </div>
+    </section>
+    <section id="how-it-works" class="section section-alt" aria-labelledby="how-title">
+      <div class="container">
+        <h2 id="how-title" class="section-title">How LatiFi works</h2>
+        <div class="tabs">
+          <div role="tablist" class="tablist" aria-label="How LatiFi works" hidden>
+            <button type="button" role="tab" id="tab-borrower" class="tab" aria-selected="true" aria-controls="panel-borrower" tabindex="0">For borrowers</button>
+            <button type="button" role="tab" id="tab-lender" class="tab" aria-selected="false" aria-controls="panel-lender" tabindex="-1">For lenders</button>
+          </div>
+          <div role="tabpanel" id="panel-borrower" class="tabpanel" aria-labelledby="tab-borrower" tabindex="0">
+            <h3 class="panel-title">For borrowers</h3>
+            <ol class="steps" role="list">
+              <li class="step">
+                <span class="step-number" aria-hidden="true">1</span>
+                <h3>Create your wallet.</h3>
+                <p>Create a wallet in the app or import one you already have. You write down a recovery phrase and keep it yourself.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">2</span>
+                <h3>Post your request.</h3>
+                <p>Choose the amount, rate, term and number of installments. Lenders see your reputation next to the request.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">3</span>
+                <h3>Receive and repay.</h3>
+                <p>When a lender funds it, the money arrives in your wallet. Pay each installment on time to build your reputation.</p>
+              </li>
+            </ol>
+            <a class="btn btn-secondary" href="#download">Get the app</a>
+          </div>
+          <div role="tabpanel" id="panel-lender" class="tabpanel" aria-labelledby="tab-lender" tabindex="0">
+            <h3 class="panel-title">For lenders</h3>
+            <ol class="steps" role="list">
+              <li class="step">
+                <span class="step-number" aria-hidden="true">1</span>
+                <h3>Connect your wallet.</h3>
+                <p>Create or import a wallet and sign in by signing a message. There is no password to remember.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">2</span>
+                <h3>Review open requests.</h3>
+                <p>Filter by risk, term and amount, and sort by the applicant's reputation.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">3</span>
+                <h3>Fund and collect.</h3>
+                <p>Fund the request you prefer. Installments arrive in your wallet and you follow each one in your portfolio.</p>
+              </li>
+            </ol>
+            <a class="btn btn-secondary" href="#download">Get the app</a>
+          </div>
+        </div>
       </div>
     </section>
     <section id="download" class="section section-alt" aria-labelledby="download-title">

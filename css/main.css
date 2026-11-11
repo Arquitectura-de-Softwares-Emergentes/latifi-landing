@@ -115,6 +115,10 @@
   --target-min: 48px;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   color-scheme: light;
   /* Justified exception (UI-SPEC Spacing Scale): 64px sticky header plus 16px of breathing room. */
@@ -331,6 +335,109 @@ h2:focus {
   background-image: linear-gradient(rgb(11 31 58 / 0.08), rgb(11 31 58 / 0.08));
 }
 
+.btn-secondary {
+  width: 100%;
+  border: 1.5px solid var(--color-navy-900);
+  background-color: transparent;
+  color: var(--color-navy-900);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-soft);
+}
+
+/* Section titles */
+.section-title {
+  margin-bottom: var(--space-xl);
+}
+
+/* How it works: tabs and steps */
+.tablist {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.tab {
+  flex: 1 1 0;
+  box-sizing: border-box;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: var(--space-sm) var(--space-md);
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  cursor: pointer;
+  transition: color 150ms ease-out;
+}
+
+.tab:hover {
+  color: var(--color-navy-700);
+}
+
+.tab[aria-selected="true"] {
+  border-bottom-color: var(--color-navy-900);
+  color: var(--color-navy-900);
+}
+
+/* Without the js class both panels stay stacked under their own titles. */
+.js .panel-title {
+  display: none;
+}
+
+.tabpanel + .tabpanel {
+  margin-top: var(--space-2xl);
+}
+
+.js .tabpanel + .tabpanel {
+  margin-top: 0;
+}
+
+.panel-title {
+  margin-bottom: var(--space-lg);
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  gap: var(--space-sm);
+  justify-items: start;
+}
+
+/* Justified exception (UI-SPEC Spacing Scale): 40px badge, not a target. */
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-green-600);
+  color: var(--color-white);
+  font-family: var(--font-heading);
+  font-size: var(--text-body);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.tabpanel .btn-secondary {
+  margin-top: var(--space-xl);
+}
+
 /* Hero */
 .hero {
   padding-block: var(--space-2xl);
@@ -406,8 +513,29 @@ h2:focus {
   }
 
   .btn-primary,
-  .btn-primary-dark {
+  .btn-primary-dark,
+  .btn-secondary {
     width: auto;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    padding-inline: var(--space-lg);
+  }
+
+  .step {
+    grid-template-columns: 40px 1fr;
+    column-gap: var(--space-md);
+    justify-items: stretch;
+  }
+
+  .step-number {
+    grid-row: 1 / span 2;
+  }
+
+  .step h3,
+  .step p {
+    grid-column: 2;
   }
 
   .card-dark {
@@ -418,6 +546,25 @@ h2:focus {
 @media (min-width: 1024px) {
   .download-column {
     max-width: 800px;
+  }
+
+  .steps {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .step {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .step-number {
+    grid-row: auto;
+  }
+
+  .step h3,
+  .step p {
+    grid-column: auto;
   }
 }
 

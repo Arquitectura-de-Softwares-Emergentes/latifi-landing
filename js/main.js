@@ -135,9 +135,91 @@ function onAnchorClick(event) {
   }
 }
 
+// Tabs (How it works). The markup ships the tablist with the hidden attribute and both
+// panels visible, so without this script the content stays stacked and readable.
+const TAB_PREFIX = 'tab-';
+
+function tabList() {
+  return document.querySelector('[role="tablist"]');
+}
+
+// Selects the tab called name ("borrower" or "lender"): aria-selected, roving tabindex and
+// panel visibility move together. options.focus moves keyboard focus to that tab.
+function selectTab(name, options) {
+  const list = tabList();
+  if (!list) {
+    return;
+  }
+  const tabs = Array.from(list.querySelectorAll('[role="tab"]'));
+  const wanted = tabs.find((tab) => tab.id === TAB_PREFIX + name);
+  if (!wanted) {
+    return;
+  }
+  tabs.forEach((tab) => {
+    const selected = tab === wanted;
+    tab.setAttribute('aria-selected', selected ? 'true' : 'false');
+    tab.setAttribute('tabindex', selected ? '0' : '-1');
+    const panel = document.getElementById(tab.getAttribute('aria-controls'));
+    if (panel) {
+      panel.hidden = !selected;
+    }
+  });
+  if (options && options.focus) {
+    wanted.focus();
+  }
+}
+
+function onTabKeydown(event) {
+  const tab = event.target.closest('[role="tab"]');
+  if (!tab || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+    return;
+  }
+  const tabs = Array.from(tab.parentNode.querySelectorAll('[role="tab"]'));
+  const index = tabs.indexOf(tab);
+  let next = -1;
+  if (event.key === 'ArrowRight') {
+    next = (index + 1) % tabs.length;
+  } else if (event.key === 'ArrowLeft') {
+    next = (index - 1 + tabs.length) % tabs.length;
+  } else if (event.key === 'Home') {
+    next = 0;
+  } else if (event.key === 'End') {
+    next = tabs.length - 1;
+  }
+  if (next < 0) {
+    return;
+  }
+  event.preventDefault();
+  selectTab(tabs[next].id.slice(TAB_PREFIX.length), { focus: true });
+}
+
+function initTabs() {
+  const list = tabList();
+  if (!list) {
+    return;
+  }
+  const tabs = Array.from(list.querySelectorAll('[role="tab"]'));
+  if (tabs.length === 0) {
+    return;
+  }
+  list.removeAttribute('hidden');
+  const current = tabs.find((tab) => tab.getAttribute('aria-selected') === 'true') || tabs[0];
+  selectTab(current.id.slice(TAB_PREFIX.length));
+  list.addEventListener('click', (event) => {
+    const tab = event.target.closest('[role="tab"]');
+    if (tab) {
+      selectTab(tab.id.slice(TAB_PREFIX.length));
+    }
+  });
+  list.addEventListener('keydown', onTabKeydown);
+}
+
 document.addEventListener('click', (event) => {
   onLanguageClick(event);
   onAnchorClick(event);
 });
 
 reconcileHash();
+initTabs();
+
+export { selectTab };
