@@ -483,6 +483,98 @@ h2:focus {
   margin-top: var(--space-sm);
 }
 
+/* Video slot: hidden and inert until a maintainer sets data-src and removes the attribute. */
+.video-slot {
+  margin: var(--space-2xl) 0 0;
+}
+
+.video-slot h3 {
+  margin-bottom: var(--space-md);
+}
+
+.video-frame {
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--color-navy-900);
+  aspect-ratio: 16 / 9;
+}
+
+.video-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-error {
+  margin-top: var(--space-md);
+  color: var(--color-text);
+}
+
+.video-transcript {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  margin-top: var(--space-sm);
+  color: var(--color-navy-700);
+  font-size: var(--text-label);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* FAQ: native details, independent items */
+.faq-column {
+  max-width: 800px;
+  margin-inline: auto;
+}
+
+.faq-group + .faq-group {
+  margin-top: var(--space-xl);
+}
+
+.faq-group-title {
+  margin-bottom: var(--space-sm);
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.faq-item:first-of-type {
+  border-top: 1px solid var(--color-divider);
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  box-sizing: border-box;
+  min-height: var(--target-min);
+  padding: var(--space-sm) var(--space-md);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary .icon {
+  flex: none;
+  color: var(--color-navy-700);
+  transition: transform 150ms ease-out;
+}
+
+.faq-item[open] summary .icon {
+  transform: rotate(180deg);
+}
+
+.faq-item p {
+  padding: 0 var(--space-md) var(--space-md);
+}
+
 /* Security: Navy 900 band */
 .section-dark {
   background: var(--color-navy-900);
@@ -622,6 +714,11 @@ h2:focus {
 @media (min-width: 1024px) {
   .download-column {
     max-width: 800px;
+  }
+
+  .video-slot {
+    max-width: 800px;
+    margin-inline: auto;
   }
 
   .steps {

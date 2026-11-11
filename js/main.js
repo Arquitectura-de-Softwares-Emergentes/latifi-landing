@@ -214,12 +214,116 @@ function initTabs() {
   list.addEventListener('keydown', onTabKeydown);
 }
 
+// Video slot (Benefits). The slot ships with the hidden attribute and an empty data-src, so
+// it is inert: no request, no space. A maintainer sets an https URL in data-src and removes
+// hidden. Only an https URL is ever used, and the CSP still blocks the frame until the exact
+// origin is added to frame-src (T-06-09).
+const VIDEO_TIMEOUT_MS = 8000;
+const VIDEO_REFRESH_EVENT = 'latifi:video-refresh';
+let stopVideo = null;
+
+// Returns the URL when raw is an absolute https URL, otherwise null.
+function httpsUrl(raw) {
+  try {
+    const url = new URL(raw);
+    return url.protocol === 'https:' ? url.href : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function initVideo() {
+  if (stopVideo) {
+    stopVideo();
+    stopVideo = null;
+  }
+  const slot = document.getElementById('video-slot');
+  if (!slot || slot.hidden) {
+    return;
+  }
+  const frame = slot.querySelector('iframe');
+  const problem = slot.querySelector('.video-error');
+  const url = frame ? httpsUrl(frame.getAttribute('data-src') || '') : null;
+  if (!frame || !problem || url === null) {
+    return;
+  }
+
+  problem.hidden = true;
+  let observer = null;
+  let timer = null;
+  let finished = false;
+
+  const release = () => {
+    finished = true;
+    if (observer) {
+      observer.disconnect();
+      observer = null;
+    }
+    if (timer !== null) {
+      window.clearTimeout(timer);
+      timer = null;
+    }
+    window.removeEventListener('offline', fail);
+    window.removeEventListener('online', retry);
+    frame.removeEventListener('load', loaded);
+    frame.removeEventListener('error', fail);
+  };
+  function fail() {
+    release();
+    problem.hidden = false;
+  }
+  function loaded() {
+    release();
+  }
+  function retry() {
+    initVideo();
+  }
+  const activate = () => {
+    if (observer) {
+      observer.disconnect();
+      observer = null;
+    }
+    if (finished) {
+      return;
+    }
+    if (window.navigator.onLine === false) {
+      fail();
+      window.addEventListener('online', retry);
+      return;
+    }
+    timer = window.setTimeout(fail, VIDEO_TIMEOUT_MS);
+    frame.setAttribute('src', url);
+  };
+
+  frame.addEventListener('load', loaded);
+  frame.addEventListener('error', fail);
+  window.addEventListener('offline', fail);
+  stopVideo = release;
+
+  if (window.navigator.onLine === false) {
+    activate();
+  } else if ('IntersectionObserver' in window) {
+    observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        activate();
+      }
+    }, { rootMargin: '200px' });
+    observer.observe(frame);
+  } else {
+    activate();
+  }
+}
+
 document.addEventListener('click', (event) => {
   onLanguageClick(event);
   onAnchorClick(event);
 });
 
+// A maintainer or a test can dispatch this event on the document after changing the slot.
+document.addEventListener(VIDEO_REFRESH_EVENT, initVideo);
+
 reconcileHash();
 initTabs();
+initVideo();
 
 export { selectTab };

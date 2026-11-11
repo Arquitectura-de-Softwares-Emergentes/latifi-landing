@@ -13,7 +13,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { findChrome, freePort, readSiteUrl, serve, stage } from './lib/site.mjs';
+import { findChrome, freePort, listPages, readSiteUrl, serve, stage } from './lib/site.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -167,17 +167,24 @@ async function newPage(connection, shotsDir) {
 
   const errors = [];
   const requested = [];
+  const failed = [];
+  const requestUrls = new Map();
   connection.on(sessionId, (method, params) => {
     if (method === 'Network.requestWillBeSent') {
       requested.push(params.request.url);
+      requestUrls.set(params.requestId, params.request.url);
+    } else if (method === 'Network.loadingFailed') {
+      failed.push(`${requestUrls.get(params.requestId) || params.requestId} (${params.errorText})`);
     } else if (method === 'Runtime.exceptionThrown') {
       const details = params.exceptionDetails || {};
       errors.push(`exception: ${(details.exception && details.exception.description) || details.text}`);
     } else if (method === 'Runtime.consoleAPICalled' && params.type === 'error') {
       errors.push(`console.error: ${(params.args || []).map((arg) => arg.value || arg.description).join(' ')}`);
-    } else if (method === 'Log.entryAdded' && params.entry.level === 'error') {
-      if (!String(params.entry.url || '').endsWith('favicon.ico')) {
-        errors.push(`log: ${params.entry.text} ${params.entry.url || ''}`.trim());
+    } else if (method === 'Log.entryAdded') {
+      const entry = params.entry;
+      const violation = /content security policy/i.test(entry.text || '');
+      if ((entry.level === 'error' || violation) && !String(entry.url || '').endsWith('favicon.ico')) {
+        errors.push(`log: ${entry.text} ${entry.url || ''}`.trim());
       }
     }
   });
@@ -301,6 +308,8 @@ async function newPage(connection, shotsDir) {
       await send('Input.dispatchMouseEvent', { type: 'mousePressed', ...mouse });
       await send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...mouse });
     },
+    // Raw DevTools command for the page session (state tests that need emulation).
+    cdp: (method, params) => send(method, params),
     async addNewDocumentScript(source) {
       await send('Page.addScriptToEvaluateOnNewDocument', { source });
     },
@@ -325,6 +334,7 @@ async function newPage(connection, shotsDir) {
     },
     consoleErrors: () => errors.slice(),
     requestedUrls: () => requested.slice(),
+    failedRequests: () => failed.slice(),
   };
 
   const dispose = async () => {
@@ -357,7 +367,12 @@ const STATUS_TEXT = {
   es: 'El enlace de descarga estará disponible con la primera versión.',
 };
 
-function makeScenarios(base) {
+const VIDEO_ERROR = {
+  en: 'The video could not load. Read the transcript instead.',
+  es: 'No se pudo cargar el video. Lee la transcripción.',
+};
+
+function makeScenarios(base, siteDir) {
   const scenarios = [];
   const scenario = (name, run) => scenarios.push({ name, run });
 
@@ -667,6 +682,130 @@ function makeScenarios(base) {
     }
   });
 
+  scenario('console-clean', async (t) => {
+    const pages = listPages(siteDir);
+    assert(pages.length >= 2, `only ${pages.length} pages found in the staged site`);
+    for (const pagePath of pages) {
+      await t.open(base + pagePath.slice(1));
+      await t.evaluate('document.fonts.ready.then(() => true)');
+      await sleep(150);
+    }
+    const errors = t.consoleErrors();
+    assert(errors.length === 0, `console errors or CSP violations: ${errors.join(' | ')}`);
+    const failed = t.failedRequests();
+    assert(failed.length === 0, `failed requests: ${failed.join(' | ')}`);
+  });
+
+  scenario('video-slot-hidden', async (t) => {
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      const state = await t.evaluate(`(() => {
+        const slot = document.getElementById('video-slot');
+        const frame = slot.querySelector('iframe');
+        const r = slot.getBoundingClientRect();
+        return { hidden: slot.hasAttribute('hidden'), height: r.height, width: r.width,
+          loading: frame.getAttribute('loading'), src: frame.getAttribute('src'),
+          dataSrc: frame.getAttribute('data-src'), frameCount: document.querySelectorAll('iframe').length,
+          error: slot.querySelector('.video-error').hidden };
+      })()`);
+      assert(state.hidden, `${lang.code}: the video slot has no hidden attribute`);
+      assert(state.height === 0 && state.width === 0, `${lang.code}: the hidden slot takes space (${state.width} by ${state.height})`);
+      assert(state.loading === 'lazy', `${lang.code}: iframe loading is ${state.loading}`);
+      assert(state.src === null && state.dataSrc === '', `${lang.code}: iframe src ${state.src}, data-src "${state.dataSrc}"`);
+      assert(state.frameCount === 1 && state.error, `${lang.code}: unexpected iframe count or visible error line`);
+    }
+    const origin = new URL(base).origin;
+    const outside = t.requestedUrls().filter((url) => !/^(about|data):/.test(url) && new URL(url).origin !== origin);
+    assert(outside.length === 0, `requests outside ${origin}: ${outside.join(', ')}`);
+  });
+
+  scenario('video-error-offline', async (t) => {
+    // Bypass the page CSP so the state test exercises main.js, not the frame-src block.
+    await t.cdp('Page.setBypassCSP', { enabled: true });
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      await t.evaluate(`(() => {
+        const slot = document.getElementById('video-slot');
+        slot.hidden = false;
+        slot.querySelector('iframe').setAttribute('data-src', 'https://video-host.invalid/embed/latifi');
+      })()`);
+      await t.cdp('Network.emulateNetworkConditions', {
+        offline: true, latency: 0, downloadThroughput: -1, uploadThroughput: -1,
+      });
+      const started = Date.now();
+      await t.evaluate("document.dispatchEvent(new CustomEvent('latifi:video-refresh'))");
+      await t.waitFor(`(() => {
+        const slot = document.getElementById('video-slot');
+        const line = slot.querySelector('.video-error');
+        const link = slot.querySelector('.video-transcript');
+        const shown = (el) => !el.hidden && el.getBoundingClientRect().height > 0;
+        return shown(line) && shown(link);
+      })()`, `${lang.code}: error line and transcript link`, 1000);
+      assert(Date.now() - started < 1500, `${lang.code}: the error line took too long`);
+      const state = await t.evaluate(`({
+        line: document.querySelector('#video-slot .video-error').textContent.trim(),
+        link: document.querySelector('#video-slot .video-transcript').textContent.trim(),
+        src: document.querySelector('#video-slot iframe').getAttribute('src'),
+      })`);
+      assert(state.line === VIDEO_ERROR[lang.code], `${lang.code}: error line is "${state.line}"`);
+      assert(state.src === null, `${lang.code}: the iframe got a src while offline`);
+      // A non-https value must keep the slot inert (T-06-09).
+      await t.cdp('Network.emulateNetworkConditions', {
+        offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1,
+      });
+      await t.evaluate(`(() => {
+        document.querySelector('#video-slot .video-error').hidden = true;
+        document.querySelector('#video-slot iframe').setAttribute('data-src', 'http://video-host.invalid/embed/latifi');
+        document.dispatchEvent(new CustomEvent('latifi:video-refresh'));
+      })()`);
+      await sleep(300);
+      const inert = await t.evaluate("document.querySelector('#video-slot iframe').getAttribute('src')");
+      assert(inert === null, `${lang.code}: an http data-src reached the iframe (${inert})`);
+    }
+  });
+
+  scenario('faq-native', async (t) => {
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      const shape = await t.evaluate(`({
+        items: document.querySelectorAll('#faq details.faq-item').length,
+        groups: [...document.querySelectorAll('#faq .faq-group')].map((g) => g.querySelectorAll('details').length),
+        titles: [...document.querySelectorAll('#faq .faq-group > h3')].length,
+        open: document.querySelectorAll('#faq details[open]').length,
+      })`);
+      assert(shape.items === 7, `${lang.code}: ${shape.items} FAQ items`);
+      assert(shape.groups.join() === '3,2,2' && shape.titles === 3, `${lang.code}: FAQ groups are ${shape.groups.join('/')} with ${shape.titles} titles`);
+      assert(shape.open === 0, `${lang.code}: ${shape.open} FAQ items are open on load`);
+
+      const openState = () => t.evaluate("[...document.querySelectorAll('#faq details')].map((d) => d.open ? 1 : 0).join('')");
+      await t.evaluate("document.querySelectorAll('#faq summary')[0].focus()");
+      await t.press('Space');
+      assert((await openState()) === '1000000', `${lang.code}: Space on the first summary left ${await openState()}`);
+      await t.evaluate("document.querySelectorAll('#faq summary')[4].focus()");
+      await t.press('Enter');
+      assert((await openState()) === '1000100', `${lang.code}: Enter on the fifth summary left ${await openState()}`);
+      await t.evaluate("document.querySelectorAll('#faq summary')[0].focus()");
+      await t.press('Space');
+      assert((await openState()) === '0000100', `${lang.code}: closing the first item changed the others (${await openState()})`);
+    }
+  });
+
+  scenario('counts', async (t) => {
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      const counts = await t.evaluate(`({
+        steps: document.querySelectorAll('li.step').length,
+        features: document.querySelectorAll('article.feature').length,
+        security: document.querySelectorAll('article.security-item').length,
+        faq: document.querySelectorAll('details.faq-item').length,
+      })`);
+      const want = { steps: 6, features: 4, security: 4, faq: 7 };
+      for (const key of Object.keys(want)) {
+        assert(counts[key] === want[key], `${lang.code}: ${key} is ${counts[key]}, expected ${want[key]}`);
+      }
+    }
+  });
+
   return scenarios;
 }
 
@@ -727,7 +866,7 @@ async function main() {
     server = await serve({ dir: site, prefix, port });
     browser = await launchChrome(chromePath);
 
-    const all = makeScenarios(server.base);
+    const all = makeScenarios(server.base, site);
     const unknown = names.filter((name) => !all.some((item) => item.name === name));
     if (unknown.length > 0) {
       console.error(`ui-check: unknown scenario ${unknown.join(', ')}`);
