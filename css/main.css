@@ -438,6 +438,77 @@ h2:focus {
   margin-top: var(--space-xl);
 }
 
+/* Icons: decorative sprite symbols, always beside a visible text label. */
+.icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-soft);
+  color: var(--color-navy-700);
+}
+
+/* Benefits */
+.features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+
+.feature {
+  box-sizing: border-box;
+  padding: var(--space-lg);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-card);
+  background: var(--color-white);
+  box-shadow: var(--shadow-1);
+}
+
+.feature h3,
+.security-item h3 {
+  margin-top: var(--space-md);
+}
+
+.feature p,
+.security-item p {
+  margin-top: var(--space-sm);
+}
+
+/* Security: Navy 900 band */
+.section-dark {
+  background: var(--color-navy-900);
+  color: var(--color-white);
+}
+
+.section-dark h2,
+.section-dark h3 {
+  color: var(--color-white);
+}
+
+.section-dark p {
+  color: var(--color-on-navy-muted);
+}
+
+.section-dark .icon-circle {
+  background: rgb(255 255 255 / 0.12);
+  color: var(--color-white);
+}
+
+.security-items {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
 /* Hero */
 .hero {
   padding-block: var(--space-2xl);
@@ -523,6 +594,11 @@ h2:focus {
     padding-inline: var(--space-lg);
   }
 
+  .features,
+  .security-items {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .step {
     grid-template-columns: 40px 1fr;
     column-gap: var(--space-md);
@@ -551,6 +627,26 @@ h2:focus {
   .steps {
     grid-template-columns: repeat(3, 1fr);
     gap: var(--space-lg);
+  }
+
+  .features {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .security-layout {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--space-lg);
+  }
+
+  .security-layout .section-title {
+    grid-column: 1 / 5;
+    margin-bottom: 0;
+  }
+
+  .security-items {
+    grid-column: 5 / 13;
   }
 
   .step {
