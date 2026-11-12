@@ -1095,7 +1095,9 @@ function makeScenarios(base, siteDir) {
           const nav = footer.querySelector('nav.lang-switch');
           const header = document.querySelector('.site-header nav.lang-switch');
           const logo = footer.querySelector('img');
+          const legal = footer.querySelector('nav[aria-label="Legal"]');
           return {
+            legalLinks: legal ? [...legal.querySelectorAll('a')].map((a) => a.getAttribute('href')) : null,
             navLabel: nav ? nav.getAttribute('aria-label') : null,
             headerLabel: header.getAttribute('aria-label'),
             logo: logo ? { src: logo.getAttribute('src'), alt: logo.getAttribute('alt'), height: logo.getBoundingClientRect().height } : null,
@@ -1106,7 +1108,8 @@ function makeScenarios(base, siteDir) {
         })()`);
         assert(f.navLabel && f.navLabel !== f.headerLabel, `${where}: footer language nav label "${f.navLabel}" must differ from the header one "${f.headerLabel}"`);
         assert(f.logo && /img\/logo-on-dark\.svg$/.test(f.logo.src) && f.logo.alt === 'LatiFi' && f.logo.height >= 32, `${where}: footer logo is ${JSON.stringify(f.logo)}`);
-        assert(f.heights.length === 2 && f.heights.every((h) => h >= 48), `${where}: footer link heights ${f.heights.join(', ')}`);
+        assert(f.legalLinks && f.legalLinks.join(',') === 'terms.html,privacy.html', `${where}: footer Legal nav links are ${JSON.stringify(f.legalLinks)}`);
+        assert(f.heights.length === 4 && f.heights.every((h) => h >= 48), `${where}: footer link heights ${f.heights.join(', ')}`);
         assert(f.texts.length === 2 && f.texts.every((x) => x.length > 20), `${where}: footer text is ${JSON.stringify(f.texts)}`);
         assert(f.bg === 'rgb(11, 31, 58)', `${where}: footer background is ${f.bg}, not Navy 900`);
       }
@@ -1204,6 +1207,10 @@ function makeScenarios(base, siteDir) {
         for (const menuOpen of width < 1024 ? [false, true] : [false]) {
           await t.open(base + pagePath.slice(1), { width, height: 800 });
           if (menuOpen) {
+            // Legal pages have no menu: there is nothing to open, and the closed state already ran.
+            if (!(await t.evaluate("!!document.getElementById('menu-toggle')"))) {
+              continue;
+            }
             await t.click('#menu-toggle');
           }
           const found = await t.evaluate(`[...document.querySelectorAll('a, button, summary, [role="tab"]')].filter((el) => {
@@ -1337,6 +1344,21 @@ async function takeShots(connection, base, shotsDir) {
         await page.evaluate('document.fonts.ready.then(() => true)');
         await sleep(400);
         written.push(await page.screenshot(`${lang.code}-${viewport.width}`));
+      }
+    }
+    // The legal pages, when they exist in the staged site, at the widest and the narrowest viewport.
+    for (const file of ['terms.html', 'privacy.html']) {
+      for (const viewport of [{ width: 1280, height: 800 }, { width: 320, height: 640 }]) {
+        for (const lang of LANGS) {
+          try {
+            await page.open(base + lang.path + file, viewport);
+          } catch (error) {
+            continue;
+          }
+          await page.evaluate('document.fonts.ready.then(() => true)');
+          await sleep(400);
+          written.push(await page.screenshot(`${lang.code}-${file.replace('.html', '')}-${viewport.width}`));
+        }
       }
     }
   } finally {

@@ -928,26 +928,55 @@ h2:focus {
   justify-self: start;
 }
 
-.lang-switch-footer {
+/* The legal nav and the footer language nav share one grid area. */
+.footer-links {
   grid-area: lang;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm) var(--space-xl);
+}
+
+.legal-nav ul {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lang-switch-footer {
   flex-direction: column;
   align-items: flex-start;
 }
 
-.site-footer .lang-switch a {
+.site-footer .lang-switch a,
+.site-footer .legal-nav a {
+  display: inline-flex;
+  align-items: center;
   justify-content: flex-start;
+  box-sizing: border-box;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
   color: var(--color-white);
+  font-size: var(--text-label);
   font-weight: 600;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
 }
 
-.site-footer .lang-switch a[aria-current="page"] {
+.site-footer .legal-nav a {
+  padding: 0 var(--space-sm);
+}
+
+.site-footer .lang-switch a[aria-current="page"],
+.site-footer .legal-nav a[aria-current="page"] {
   text-decoration-thickness: 2px;
 }
 
-.site-footer .lang-switch a:hover {
+.site-footer .lang-switch a:hover,
+.site-footer .legal-nav a:hover {
   color: var(--color-lime-400);
 }
 
@@ -1043,13 +1072,12 @@ h2:focus {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .footer-layout {
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "logo lang"
-      "text text";
+  .footer-links {
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
+  .legal-nav ul,
   .lang-switch-footer {
     flex-direction: row;
   }
@@ -1091,6 +1119,15 @@ h2:focus {
     grid-template-columns: auto 1fr auto;
     grid-template-areas: "logo text lang";
     column-gap: var(--space-xl);
+  }
+
+  .footer-links {
+    flex-wrap: nowrap;
+  }
+
+  .legal-nav ul,
+  .lang-switch-footer {
+    flex-direction: column;
   }
 
   .site-nav,
