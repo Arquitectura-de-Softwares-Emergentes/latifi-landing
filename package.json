@@ -1,0 +1,19 @@
+{
+  "name": "latifi-landing-tools",
+  "private": true,
+  "description": "Verification tooling for the LatiFi landing page. The site itself has no build step.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "npm run check:meta && npm run check:parity && npm run check:contrast && npm run check:ui && npm run check:lighthouse",
+    "check:meta": "node scripts/check-meta.mjs --self-test && node scripts/check-meta.mjs --strict",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "check:parity": "node scripts/check-i18n-parity.mjs --self-test && node scripts/check-i18n-parity.mjs",
+    "check:ui": "node scripts/ui-check.mjs",
+    "check:lighthouse": "node scripts/lighthouse-check.mjs"
+  },
+  "devDependencies": {
+    "lighthouse": "13.6.0"
+  }
+}

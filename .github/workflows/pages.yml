@@ -1,0 +1,63 @@
+name: Deploy Pages
+
+# Runs only when a release lands on main (or by hand). Pull requests never deploy,
+# so branch code cannot reach the public site (T-06-22).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Only the actions-owned actions below, each at its current major tag, like ci.yml (T-06-25).
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      # Copies the allowlist only (pages, css, js, img, robots.txt, sitemap.xml).
+      # Strict mode fails the job when an expected file is missing (T-06-24).
+      - name: Stage the site
+        run: node scripts/stage-site.mjs --strict . _site
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+      # The deployed URL travels through an env variable, never inline in the script.
+      - name: Check the deployed site answers
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --output /dev/null "$PAGE_URL"

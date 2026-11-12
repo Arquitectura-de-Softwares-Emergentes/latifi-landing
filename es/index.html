@@ -2,29 +2,298 @@
 <html lang="es-419">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-eCyzDbjwzonLJwFlbpChmcqdl5ewFoKbnCA9u2jzkH8=' 'sha256-qOhFsq0QMV2REqNwk5hGH5bZE9SkX6gt6yeyKdYPv+U='; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LatiFi | Microcréditos entre personas</title>
-  <meta name="description" content="LatiFi conecta a personas sin acceso bancario con prestamistas mediante una billetera móvil y contratos inteligentes en una red de pruebas.">
+  <title>LatiFi: microcréditos P2P con reputación verificable</title>
+  <meta name="description" content="LatiFi conecta a prestatarios y prestamistas con microcréditos P2P sobre blockchain. No custodia tu dinero y muestra la reputación de cada solicitante.">
+  <meta name="keywords" content="microcréditos, préstamos P2P, blockchain, stablecoins, reputación crediticia, billetera digital, LatiFi Wallet, Perú">
+  <meta name="author" content="LatiFi">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0B1F3A">
+  <link rel="canonical" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/es/">
+  <link rel="alternate" hreflang="en" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/">
+  <link rel="alternate" hreflang="en-US" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/">
+  <link rel="alternate" hreflang="es-419" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/es/">
+  <link rel="alternate" hreflang="x-default" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/">
+  <meta property="og:title" content="LatiFi: microcréditos P2P con reputación verificable">
+  <meta property="og:description" content="LatiFi conecta a prestatarios y prestamistas con microcréditos P2P sobre blockchain. No custodia tu dinero y muestra la reputación de cada solicitante.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LatiFi">
+  <meta property="og:url" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/es/">
+  <meta property="og:image" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/img/og-latifi.png">
+  <meta property="og:locale" content="es_LA">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LatiFi: microcréditos P2P con reputación verificable">
+  <meta name="twitter:description" content="LatiFi conecta a prestatarios y prestamistas con microcréditos P2P sobre blockchain. No custodia tu dinero y muestra la reputación de cada solicitante.">
+  <meta name="twitter:image" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/img/og-latifi.png">
+  <meta name="twitter:image:alt" content="Logotipo de LatiFi sobre un fondo azul marino oscuro">
+  <link rel="preload" href="../css/fonts/sora-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../css/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <script>document.documentElement.classList.add("js")</script>
   <link rel="stylesheet" href="../css/main.css">
-  <link rel="alternate" hreflang="en" href="../index.html">
-  <link rel="alternate" hreflang="es-419" href="index.html">
-  <link rel="alternate" hreflang="x-default" href="../index.html">
+  <link rel="icon" type="image/svg+xml" href="../img/isotype.svg">
+  <script>try{var l=localStorage.getItem("latifi.lang"),h=location.hash,m={"#como-funciona":"#how-it-works","#beneficios":"#benefits","#seguridad":"#security","#descarga":"#download"};if(l=="en")location.replace("../"+location.pathname.split("/").pop()+location.search+(m[h]||h))}catch(e){}</script>
 </head>
 <body>
   <a class="skip-link" href="#main">Saltar al contenido principal</a>
-  <header>
-    <nav aria-label="Idioma">
-      <a href="../index.html" hreflang="en" lang="en">English</a>
-      <a href="index.html" hreflang="es-419" lang="es-419" aria-current="page">Español</a>
-    </nav>
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="logo" href="index.html"><img src="../img/logo.svg" alt="LatiFi, inicio" width="124" height="40"></a>
+      <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-label-open="Abrir menú" data-label-close="Cerrar menú">
+        <svg class="icon icon-menu" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#menu"></use></svg>
+        <svg class="icon icon-close" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#close"></use></svg>
+      </button>
+      <div id="site-nav" class="site-nav">
+        <nav class="main-nav" aria-label="Principal">
+          <ul>
+            <li><a href="#como-funciona">Cómo funciona</a></li>
+            <li><a href="#beneficios">Beneficios</a></li>
+            <li><a href="#seguridad">Seguridad</a></li>
+            <li><a href="#faq">Preguntas</a></li>
+            <li><a class="btn btn-primary" href="#descarga">Descargar la app</a></li>
+          </ul>
+        </nav>
+        <nav class="lang-switch" aria-label="Idioma">
+          <a href="../index.html" hreflang="en" lang="en">English</a>
+          <a href="index.html" hreflang="es-419" lang="es-419" aria-current="page">Español</a>
+        </nav>
+      </div>
+    </div>
   </header>
-  <main id="main">
-    <h1>LatiFi</h1>
-    <p>Microcréditos entre personas para quienes no tienen acceso bancario, construido como proyecto universitario en una red de pruebas.</p>
+  <main id="main" tabindex="-1">
+    <section id="top" class="hero" tabindex="-1" aria-labelledby="hero-title">
+      <div class="container hero-layout">
+        <div class="hero-text">
+          <h1 id="hero-title">Microcréditos entre personas, con una reputación que puedes verificar</h1>
+          <p>Pide un préstamo o fondea uno directamente. LatiFi no custodia tu dinero ni tus llaves, y cada prestamista ve tu historial de pagos antes de decidir.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#descarga">Descargar la app</a>
+            <a class="btn btn-secondary" href="#como-funciona" data-segment="borrower">Soy prestatario</a>
+            <a class="btn btn-secondary" href="#como-funciona" data-segment="lender">Soy prestamista</a>
+          </div>
+        </div>
+        <ul class="chips" role="list">
+          <li class="chip"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="../img/icons.svg#shield"></use></svg>Tú guardas tus llaves</li>
+          <li class="chip"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="../img/icons.svg#visibility"></use></svg>Reputación visible para los prestamistas</li>
+          <li class="chip"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="../img/icons.svg#description"></use></svg>Reglas escritas en un contrato</li>
+          <li class="chip"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="../img/icons.svg#currency-exchange"></use></svg>Montos también en soles</li>
+        </ul>
+        <p class="demo-notice">Demostración académica en una red de pruebas. El dinero de la app no tiene valor real.</p>
+        <article class="card" aria-labelledby="card-title">
+          <h2 id="card-title" class="card-title">Ejemplo de préstamo</h2>
+          <p class="card-note">Cifras ilustrativas, no son datos reales</p>
+          <dl class="card-fields">
+            <div><dt>Monto</dt><dd>100 dólares digitales de prueba</dd></div>
+            <div><dt>Plazo</dt><dd>90 días</dd></div>
+            <div><dt>Cuotas</dt><dd>3</dd></div>
+            <div><dt>Tasa</dt><dd>12&nbsp;% anual, la define quien pide</dd></div>
+          </dl>
+          <div class="card-progress">
+            <label for="loan-progress">2 de 3 cuotas pagadas</label>
+            <progress id="loan-progress" value="2" max="3">2 de 3</progress>
+          </div>
+          <span class="chip chip-paid"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="../img/icons.svg#check"></use></svg>Pagado</span>
+        </article>
+      </div>
+    </section>
+    <section id="como-funciona" class="section section-alt" aria-labelledby="how-title">
+      <div class="container">
+        <h2 id="how-title" class="section-title">Cómo funciona LatiFi</h2>
+        <div class="tabs">
+          <div role="tablist" class="tablist" aria-label="Cómo funciona LatiFi" hidden>
+            <button type="button" role="tab" id="tab-borrower" class="tab" aria-selected="true" aria-controls="panel-borrower" tabindex="0">Para prestatarios</button>
+            <button type="button" role="tab" id="tab-lender" class="tab" aria-selected="false" aria-controls="panel-lender" tabindex="-1">Para prestamistas</button>
+          </div>
+          <div role="tabpanel" id="panel-borrower" class="tabpanel" aria-labelledby="tab-borrower" tabindex="0">
+            <h3 class="panel-title">Para prestatarios</h3>
+            <ol class="steps" role="list">
+              <li class="step">
+                <span class="step-number" aria-hidden="true">1</span>
+                <h3>Crea tu billetera.</h3>
+                <p>Crea una billetera en la app o importa la que ya tienes. Anotas una frase de recuperación y la guardas tú.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">2</span>
+                <h3>Publica tu solicitud.</h3>
+                <p>Elige el monto, la tasa, el plazo y el número de cuotas. Los prestamistas ven tu reputación junto a la solicitud.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">3</span>
+                <h3>Recibe y paga.</h3>
+                <p>Cuando un prestamista la fondea, el dinero llega a tu billetera. Paga cada cuota a tiempo para subir tu reputación.</p>
+              </li>
+            </ol>
+            <a class="btn btn-secondary" href="#descarga">Descargar la app</a>
+          </div>
+          <div role="tabpanel" id="panel-lender" class="tabpanel" aria-labelledby="tab-lender" tabindex="0">
+            <h3 class="panel-title">Para prestamistas</h3>
+            <ol class="steps" role="list">
+              <li class="step">
+                <span class="step-number" aria-hidden="true">1</span>
+                <h3>Conecta tu billetera.</h3>
+                <p>Crea o importa una billetera e inicia sesión firmando un mensaje. No hay contraseña que recordar.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">2</span>
+                <h3>Revisa las solicitudes abiertas.</h3>
+                <p>Filtra por riesgo, plazo y monto, y ordena por la reputación de quien pide.</p>
+              </li>
+              <li class="step">
+                <span class="step-number" aria-hidden="true">3</span>
+                <h3>Fondea y cobra.</h3>
+                <p>Fondea la solicitud que prefieras. Las cuotas llegan a tu billetera y sigues cada una en tu portafolio.</p>
+              </li>
+            </ol>
+            <a class="btn btn-secondary" href="#descarga">Descargar la app</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="beneficios" class="section" aria-labelledby="benefits-title">
+      <div class="container">
+        <h2 id="benefits-title" class="section-title">Condiciones claras desde la primera pantalla</h2>
+        <div class="features">
+          <article class="feature">
+            <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#star"></use></svg></span>
+            <h3>Reputación que se puede leer.</h3>
+            <p>Los prestamistas ven los pagos a tiempo antes de decidir. Quien pide construye su historial con cada cuota.</p>
+          </article>
+          <article class="feature">
+            <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#currency-exchange"></use></svg></span>
+            <h3>Montos en dos monedas.</h3>
+            <p>Cada monto aparece en dólares digitales de prueba y en soles, para que sepas a qué te comprometes.</p>
+          </article>
+          <article class="feature">
+            <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#lock-open"></use></svg></span>
+            <h3>Sin garantía bloqueada.</h3>
+            <p>Tu reputación reemplaza al dinero inmovilizado como garantía.</p>
+          </article>
+          <article class="feature">
+            <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#chat-bubble"></use></svg></span>
+            <h3>Lenguaje sencillo.</h3>
+            <p>Palabras como cuota y comisión de red, sin jerga técnica.</p>
+          </article>
+        </div>
+        <figure id="video-slot" class="video-slot" hidden>
+          <h3>Sobre el producto</h3>
+          <div class="video-frame">
+            <iframe title="Video de presentación del producto LatiFi" loading="lazy" data-src="" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen></iframe>
+          </div>
+          <div id="video-transcript" tabindex="-1" hidden></div>
+          <p class="video-error" hidden>No se pudo cargar el video. Lee la transcripción.</p>
+          <a class="video-transcript" href="#video-transcript">Leer la transcripción</a>
+        </figure>
+      </div>
+    </section>
+    <section id="seguridad" class="section section-dark on-dark" aria-labelledby="security-title">
+      <div class="container">
+        <div class="security-layout">
+          <h2 id="security-title" class="section-title">Tú tienes las llaves. Nosotros nunca tocamos tus fondos.</h2>
+          <div class="security-items">
+            <article class="security-item">
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#key"></use></svg></span>
+              <h3>Tú tienes el control.</h3>
+              <p>Tus llaves privadas se quedan en tu teléfono, protegidas por el dispositivo. LatiFi no puede mover tu dinero.</p>
+            </article>
+            <article class="security-item">
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#gavel"></use></svg></span>
+              <h3>Reglas que se cumplen solas.</h3>
+              <p>El monto, la tasa y las cuotas quedan escritos en un contrato en la red de pruebas Polygon Amoy. Nadie puede cambiarlos cuando el préstamo ya está fondeado.</p>
+            </article>
+            <article class="security-item">
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#verified"></use></svg></span>
+              <h3>Reputación basada en pagos reales.</h3>
+              <p>Tu nivel sale de los pagos que registra el contrato y de tu perfil, no de una promesa.</p>
+            </article>
+            <article class="security-item">
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#science"></use></svg></span>
+              <h3>Solo red de pruebas.</h3>
+              <p>Esta es una demostración académica. El dinero de la app es una moneda de prueba sin valor real.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="faq" class="section" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="faq-column">
+          <h2 id="faq-title" class="section-title">Preguntas frecuentes</h2>
+          <div class="faq-group">
+            <h3 class="faq-group-title">Cómo funciona</h3>
+            <details class="faq-item">
+              <summary>¿Necesito saber de criptomonedas?<svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#chevron-down"></use></svg></summary>
+              <p>No. La app te guía paso a paso y usa palabras de todos los días. Sí necesitas una billetera, y la app te crea una.</p>
+            </details>
+            <details class="faq-item">
+              <summary>¿Quién fija la tasa de interés?<svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#chevron-down"></use></svg></summary>
+              <p>Quien pide el préstamo la propone junto con el monto y el plazo. El prestamista decide si lo fondea.</p>
+            </details>
+            <details class="faq-item">
+              <summary>¿Cuántas cuotas puedo elegir?<svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#chevron-down"></use></svg></summary>
+              <p>De 1 a 6 cuotas iguales. Una sola cuota equivale a un pago único.</p>
+            </details>
+          </div>
+          <div class="faq-group">
+            <h3 class="faq-group-title">Seguridad</h3>
+            <details class="faq-item">
+              <summary>¿LatiFi guarda mi dinero?<svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#chevron-down"></use></svg></summary>
+              <p>No. Los fondos pasan de una billetera a otra por medio del contrato. LatiFi no custodia tus fondos ni tus llaves privadas.</p>
+            </details>
+            <details class="faq-item">
+              <summary>¿Qué pasa si pierdo mi frase de recuperación?<svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#chevron-down"></use></svg></summary>
+              <p>Nadie puede recuperarla por ti, ni siquiera LatiFi. Guárdala sin conexión en un lugar seguro cuando crees tu billetera.</p>
+            </details>
+          </div>
+          <div class="faq-group">
+            <h3 class="faq-group-title">Descarga</h3>
+            <details class="faq-item">
+              <summary>¿El dinero es real?<svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#chevron-down"></use></svg></summary>
+              <p>No. Esta versión es una demostración académica en la red de pruebas Polygon Amoy y usa una moneda de prueba sin valor real.</p>
+            </details>
+            <details class="faq-item">
+              <summary>¿En qué teléfonos funciona?<svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#chevron-down"></use></svg></summary>
+              <p>Por ahora solo en Android. Una versión para iOS queda como trabajo futuro.</p>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="descarga" class="section section-alt" aria-labelledby="download-title">
+      <div class="container">
+        <div class="download-column">
+          <h2 id="download-title" tabindex="-1">Descarga la app</h2>
+          <p>LatiFi Wallet funciona en Android. Descarga la versión de prueba y crea tu billetera en pocos minutos.</p>
+          <div class="card-dark on-dark">
+            <a class="btn btn-primary-dark" href="#descarga" data-placeholder="true">Descargar para Android</a>
+            <p class="status">El enlace de descarga estará disponible con la primera versión.</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer>
-    <p>SI728 Arquitecturas de Software Emergentes, UPC.</p>
+  <footer class="site-footer on-dark">
+    <div class="container footer-layout">
+      <img class="footer-logo" src="../img/logo-on-dark.svg" alt="LatiFi" width="114" height="26">
+      <div class="footer-links">
+        <nav class="legal-nav" aria-label="Legal">
+          <ul role="list">
+            <li><a href="terms.html">Términos y condiciones</a></li>
+            <li><a href="privacy.html">Política de privacidad</a></li>
+          </ul>
+        </nav>
+        <nav class="lang-switch lang-switch-footer" aria-label="Idioma (pie de página)">
+          <a href="../index.html" hreflang="en" lang="en">English</a>
+          <a href="index.html" hreflang="es-419" lang="es-419" aria-current="page">Español</a>
+        </nav>
+      </div>
+      <div class="footer-text">
+        <p>SI728 Arquitecturas de Software Emergentes, UPC. Proyecto académico en una red de pruebas.</p>
+        <p>Demostración académica en una red de pruebas. El dinero de la app no tiene valor real.</p>
+      </div>
+    </div>
   </footer>
+  <a class="back-to-top" href="#top" hidden aria-label="Volver arriba"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="../img/icons.svg#arrow-up"></use></svg></a>
   <script type="module" src="../js/main.js"></script>
 </body>
 </html>

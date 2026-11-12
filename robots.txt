@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/sitemap.xml

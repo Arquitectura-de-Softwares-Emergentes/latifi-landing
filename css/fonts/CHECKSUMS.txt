@@ -1,0 +1,18 @@
+# Self-hosted font files for the LatiFi landing page.
+# Verify from inside this directory: shasum -a 256 -c <(grep -E '^[0-9a-f]{64}  ' CHECKSUMS.txt)
+#
+# Sora (headings): package @fontsource-variable/sora 5.3.0, license SIL OFL 1.1
+#   https://cdn.jsdelivr.net/npm/@fontsource-variable/sora@5.3.0/files/sora-latin-wght-normal.woff2
+#   https://cdn.jsdelivr.net/npm/@fontsource-variable/sora@5.3.0/files/sora-latin-ext-wght-normal.woff2
+#   https://cdn.jsdelivr.net/npm/@fontsource-variable/sora@5.3.0/LICENSE (saved as OFL-Sora.txt)
+# Inter (body): package @fontsource-variable/inter 5.3.0, license SIL OFL 1.1
+#   https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5.3.0/files/inter-latin-wght-normal.woff2
+#   https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5.3.0/files/inter-latin-ext-wght-normal.woff2
+#   https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5.3.0/LICENSE (saved as OFL-Inter.txt)
+# The packages were never installed. Files were fetched with curl and checked for the wOF2 magic bytes.
+3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62  inter-latin-wght-normal.woff2
+34b9c504cab7a73e37b746343a449132e56cf7b5481af2cb81dc74dcff25c956  inter-latin-ext-wght-normal.woff2
+fa26406eeda9a3c6ec3d9ea8813c3045d6dc755e30c716d5c094e8ef43be5a7f  sora-latin-wght-normal.woff2
+c163c536f68befd99a83d4f17e8b88030e7f54229688a45c44f70c7149db7385  sora-latin-ext-wght-normal.woff2
+3b0a5fca3d17942cde889069889dedbbbd075e9b599968c82a95f4d944e9b345  OFL-Inter.txt
+1ec9623d38c445eb4dfe5fcc783e0f0ee728cc97ca157ce1f8cb2b3bf9d9b0d9  OFL-Sora.txt

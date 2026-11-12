@@ -70,14 +70,25 @@ Releases use SemVer. Right after a release or hotfix merges into `main`, create 
 
 ## Running the checks locally
 
-The `ci` job validates every HTML file with the Nu HTML Checker, checks local links and fragments with lychee in offline mode, and runs the language and accessibility guard. Before you push, run the guard and its self-test, which need only bash:
+The `ci` job validates every HTML file with the Nu HTML Checker, checks local links and fragments with lychee in offline mode, runs the language and accessibility guard and the CSP guard, and then runs the meta, parity, contrast, browser and Lighthouse checks. Before you push, run the same commands. The first four need only bash. The rest need Node 22 or newer and Google Chrome, plus `npm ci --ignore-scripts` once:
 
 ```
 bash scripts/check-i18n-a11y.sh
 bash scripts/check-i18n-a11y.test.sh
+bash scripts/check-csp.sh
+bash scripts/check-csp.test.sh
+node scripts/check-meta.mjs --self-test
+node scripts/check-meta.mjs --strict
+node scripts/check-i18n-parity.mjs --self-test
+node scripts/check-i18n-parity.mjs
+node scripts/check-contrast.mjs
+node scripts/ui-check.mjs
+node scripts/lighthouse-check.mjs
 ```
 
-The guard fails when a page loses its `lang` attribute, its skip link, its single `main` landmark, its title or its `hreflang` alternates. The Nu HTML Checker and lychee run only in CI.
+The guard fails when a page loses its `lang` attribute, its skip link, its single `main` landmark, its title or its `hreflang` alternates. The CSP guard fails on a weakened policy, an inline script whose hash is missing, or any inline style or event handler. The Nu HTML Checker and lychee run only in CI.
+
+Every push to `main` deploys the site to GitHub Pages through `.github/workflows/pages.yml`. Pull requests never deploy. The README explains how to change the site URL, the download link and the video.
 
 To try the commit rules without GitHub, run `bash .github/scripts/commit-lint.test.sh`.
 

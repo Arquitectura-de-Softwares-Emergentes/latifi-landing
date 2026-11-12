@@ -1,0 +1,107 @@
+/* Legal pages (terms and privacy). Loaded after main.css and reuses its tokens.
+   Headings and paragraphs only: no tables, tabs or accordions (UI-SPEC, Legal pages). */
+
+/* The legal header has no menu and no main nav, so it wraps at Compact and never sticks.
+   A tall sticky bar could cover a focused link at 200 percent text (WCAG 2.4.11). */
+.js .site-header.site-header-legal {
+  position: relative;
+}
+
+.js .header-bar.header-bar-legal {
+  flex-wrap: wrap;
+}
+
+.legal-header-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) var(--space-md);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: 0 var(--space-sm);
+  color: var(--color-navy-700);
+  font-size: var(--text-label);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.back-link:hover {
+  color: var(--color-navy-900);
+}
+
+/* Single reading column. overflow-wrap anywhere keeps a long URL or address inside the column
+   at 320 px and at 200 percent text, so nothing scrolls sideways or hides (SC 1.4.4, 1.4.10). */
+.legal {
+  box-sizing: border-box;
+  max-width: 80ch;
+  margin-inline: auto;
+  padding-block: var(--space-2xl);
+  overflow-wrap: anywhere;
+}
+
+.legal h1,
+.legal h2 {
+  font-size: var(--text-heading);
+  line-height: 1.25;
+  margin-bottom: var(--space-xl);
+}
+
+.legal h2 {
+  margin-top: var(--space-2xl);
+}
+
+.legal-updated {
+  margin-bottom: var(--space-lg);
+  color: var(--color-muted);
+  font-size: var(--text-label);
+}
+
+.legal p,
+.legal li {
+  max-width: none;
+}
+
+/* Adjacent paragraphs keep the 2em gap from main.css (p + p). */
+.legal p + ul,
+.legal ul + p {
+  margin-top: var(--space-md);
+}
+
+.legal ul {
+  margin: 0;
+  padding-inline-start: var(--space-lg);
+}
+
+.legal li + li {
+  margin-top: var(--space-sm);
+}
+
+/* Inline text links are exempt from the 48 px target rule. They stay underlined and use Navy 700. */
+.legal a {
+  color: var(--color-navy-700);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal a:hover {
+  color: var(--color-navy-900);
+}
+
+.legal code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9375em;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 600px) {
+  .legal {
+    padding-block: var(--space-3xl);
+  }
+}
