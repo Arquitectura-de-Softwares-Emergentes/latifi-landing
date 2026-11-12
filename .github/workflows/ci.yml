@@ -16,7 +16,7 @@ jobs:
   ci:
     name: ci
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -70,5 +70,34 @@ jobs:
       - name: Check local links and fragments (offline)
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
-          args: --offline --no-progress --include-fragments './**/*.html' './**/*.md'
+          args: --offline --no-progress --include-fragments --exclude-path node_modules './**/*.html' './**/*.md'
           fail: true
+
+      # Tooling for the checks below: one pinned dependency (lighthouse, exact version) installed
+      # from package-lock.json with install scripts disabled (T-06-SC). The site has no build step.
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Install tooling
+        run: npm ci --ignore-scripts
+
+      - name: Meta check
+        run: |
+          node scripts/check-meta.mjs --self-test
+          node scripts/check-meta.mjs --strict
+
+      - name: i18n parity
+        run: |
+          node scripts/check-i18n-parity.mjs --self-test
+          node scripts/check-i18n-parity.mjs
+
+      - name: Contrast
+        run: node scripts/check-contrast.mjs
+
+      - name: Browser scenarios
+        run: node scripts/ui-check.mjs
+
+      - name: Lighthouse gate
+        run: node scripts/lighthouse-check.mjs
