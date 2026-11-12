@@ -1230,6 +1230,76 @@ function makeScenarios(base, siteDir) {
     assert(offenders.length === 0, `targets under 48 by 48: ${offenders.join(' | ')}`);
   });
 
+  // ---- Legal pages (plan 06-05) ----
+
+  const LEGAL_PAGES = [
+    { lang: 'en', file: 'terms.html', other: 'es/terms.html', home: 'index.html', statement: /never holds your private keys or your funds/, academic: /academic demonstration on a test network/, updated: 'Last updated:', back: 'Back to home' },
+    { lang: 'en', file: 'privacy.html', other: 'es/privacy.html', home: 'index.html', statement: /never holds your private keys or your funds/, academic: /academic demonstration on a test network/, updated: 'Last updated:', back: 'Back to home' },
+    { lang: 'es', file: 'es/terms.html', other: 'terms.html', home: 'index.html', statement: /nunca custodia tus llaves privadas ni tus fondos/, academic: /demostración académica en una red de pruebas/, updated: 'Última actualización:', back: 'Volver al inicio' },
+    { lang: 'es', file: 'es/privacy.html', other: 'privacy.html', home: 'index.html', statement: /nunca custodia tus llaves privadas ni tus fondos/, academic: /demostración académica en una red de pruebas/, updated: 'Última actualización:', back: 'Volver al inicio' },
+  ];
+
+  scenario('legal-structure', async (t) => {
+    for (const page of LEGAL_PAGES) {
+      await t.open(base + page.file);
+      const f = await t.evaluate(`(() => {
+        const article = document.querySelector('main#main article.legal');
+        const h2 = article ? [...article.querySelectorAll('h2')].map((h) => h.textContent.trim()) : [];
+        const updated = article ? article.querySelector('p.legal-updated') : null;
+        const time = updated ? updated.querySelector('time') : null;
+        const header = document.querySelector('.site-header');
+        const headerLinks = [...header.querySelectorAll('a')].map((a) => a.getAttribute('href'));
+        const switchLinks = [...header.querySelectorAll('nav.lang-switch a')].map((a) => a.getAttribute('href'));
+        const legal = document.querySelector('.site-footer nav[aria-label="Legal"]');
+        const column = article ? parseFloat(getComputedStyle(article).maxWidth) : 0;
+        return {
+          h1: document.querySelectorAll('h1').length,
+          mains: document.querySelectorAll('main').length,
+          h2,
+          updatedText: updated ? updated.textContent : '',
+          timeValid: !!time && /^\\d{4}-\\d{2}-\\d{2}$/.test(time.getAttribute('datetime') || ''),
+          backText: header.querySelector('a.back-link') ? header.querySelector('a.back-link').textContent.trim() : '',
+          backHref: header.querySelector('a.back-link') ? header.querySelector('a.back-link').getAttribute('href') : '',
+          switchLinks,
+          legalLinks: legal ? [...legal.querySelectorAll('a')].map((a) => a.getAttribute('href')) : null,
+          text: article ? article.textContent : '',
+          columnPx: article ? article.getBoundingClientRect().width : 0,
+          maxPx: column,
+          tables: document.querySelectorAll('table').length,
+          menuButton: !!document.getElementById('menu-toggle'),
+          mainNav: !!document.querySelector('nav.main-nav'),
+        };
+      })()`);
+      const where = page.file;
+      assert(f.h1 === 1 && f.mains === 1, `${where}: expected one h1 and one main, got ${f.h1} and ${f.mains}`);
+      assert(f.h2.length === 10, `${where}: ${f.h2.length} h2 elements, expected 10`);
+      f.h2.forEach((text, i) => assert(text.startsWith(`${i + 1}. `), `${where}: h2 number ${i + 1} reads "${text}"`));
+      assert(f.updatedText.startsWith(page.updated) && f.timeValid, `${where}: Last updated line is "${f.updatedText}" (time valid: ${f.timeValid})`);
+      assert(f.backText === page.back && f.backHref === page.home, `${where}: back link is "${f.backText}" to ${f.backHref}`);
+      assert(f.switchLinks.length === 2 && f.switchLinks.includes(page.other), `${where}: language switch links are ${f.switchLinks.join(', ')}, expected the counterpart ${page.other}`);
+      assert(f.legalLinks && f.legalLinks.join(',') === 'terms.html,privacy.html', `${where}: footer Legal nav is ${JSON.stringify(f.legalLinks)}`);
+      assert(page.statement.test(f.text) && page.academic.test(f.text), `${where}: the shared no custody and academic demonstration statement is missing`);
+      assert(f.tables === 0 && !f.menuButton && !f.mainNav, `${where}: legal pages carry no table, menu button or main nav`);
+      // The computed max-width is 80ch in pixels (about 808 for Inter 16px); the column may not exceed it.
+      assert(f.columnPx <= f.maxPx + 1 && f.maxPx > 600, `${where}: reading column is ${Math.round(f.columnPx)} px against a max-width of ${f.maxPx} px (80ch)`);
+    }
+  });
+
+  scenario('legal-overflow', async (t) => {
+    // A 200 character unbroken token (a long URL or address) must wrap inside the column at 320 px.
+    for (const page of LEGAL_PAGES) {
+      await t.open(base + page.file, { width: 320, height: 640 });
+      await t.evaluate(`(() => {
+        const p = document.querySelector('.legal .legal-statement') || document.querySelector('.legal p');
+        p.textContent = p.textContent + ' ' + 'x'.repeat(200);
+      })()`);
+      await sleep(100);
+      const state = await t.evaluate(`({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth, beyond: ${BEYOND} })`);
+      assert(state.scroll <= state.client, `${page.file}: scrollWidth ${state.scroll} exceeds clientWidth ${state.client} with a 200 character token (${state.beyond.join(' | ')})`);
+      assert(state.beyond.length === 0, `${page.file}: text runs beyond the viewport with a 200 character token: ${state.beyond.join(' | ')}`);
+    }
+  });
+
   scenario('reduced-motion', async (t) => {
     const MOTION = `({
       scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,

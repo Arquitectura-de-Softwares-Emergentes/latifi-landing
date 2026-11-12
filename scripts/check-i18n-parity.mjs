@@ -54,6 +54,7 @@ const ALLOWLIST = new Set([
   'Sora',
   'Inter',
   'SIL OFL 1.1',
+  'latifi.lang',
 ]);
 
 // Attributes whose value is read by people, on any element.

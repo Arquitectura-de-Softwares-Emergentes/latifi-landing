@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-LMzUjf/FsWpM5ilnkLmPPHasFBCNMQdH0FYHB8I+grY=' 'sha256-qOhFsq0QMV2REqNwk5hGH5bZE9SkX6gt6yeyKdYPv+U='; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LatiFi: privacy policy</title>
+  <meta name="description" content="How LatiFi handles your profile data and why it never holds your private keys or your funds.">
+  <meta name="author" content="LatiFi">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0B1F3A">
+  <link rel="canonical" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/privacy.html">
+  <link rel="alternate" hreflang="en" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/privacy.html">
+  <link rel="alternate" hreflang="en-US" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/privacy.html">
+  <link rel="alternate" hreflang="es-419" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/es/privacy.html">
+  <link rel="alternate" hreflang="x-default" href="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/privacy.html">
+  <meta property="og:title" content="LatiFi: privacy policy">
+  <meta property="og:description" content="How LatiFi handles your profile data and why it never holds your private keys or your funds.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LatiFi">
+  <meta property="og:url" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/privacy.html">
+  <meta property="og:image" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/img/og-latifi.png">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="es_LA">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LatiFi: privacy policy">
+  <meta name="twitter:description" content="How LatiFi handles your profile data and why it never holds your private keys or your funds.">
+  <meta name="twitter:image" content="https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/img/og-latifi.png">
+  <meta name="twitter:image:alt" content="LatiFi logo on a dark navy background">
+  <link rel="preload" href="css/fonts/sora-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="css/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <script>document.documentElement.classList.add("js")</script>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/legal.css">
+  <link rel="icon" type="image/svg+xml" href="img/isotype.svg">
+  <script>try{var l=localStorage.getItem("latifi.lang"),h=location.hash,m={"#how-it-works":"#como-funciona","#benefits":"#beneficios","#security":"#seguridad","#download":"#descarga"};if(l=="es")location.replace("es/"+location.pathname.split("/").pop()+location.search+(m[h]||h))}catch(e){}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header site-header-legal">
+    <div class="container header-bar header-bar-legal">
+      <a class="logo" href="index.html"><img src="img/logo.svg" alt="LatiFi, home" width="124" height="40"></a>
+      <div class="legal-header-links">
+        <a class="back-link" href="index.html">Back to home</a>
+        <nav class="lang-switch" aria-label="Language">
+          <a href="privacy.html" hreflang="en" lang="en" aria-current="page">English</a>
+          <a href="es/privacy.html" hreflang="es-419" lang="es-419">Español</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <main id="main" tabindex="-1">
+    <div class="container">
+      <article class="legal">
+        <h1>Privacy policy</h1>
+        <p class="legal-updated">Last updated: <time datetime="2026-11-11">November 11, 2026</time></p>
+        <p class="legal-statement">LatiFi never holds your private keys or your funds. This is an academic demonstration on a test network, and the money in the app has no real value.</p>
+        <h2>1. What we collect</h2>
+        <p>On this website, nothing about you. The site has no accounts, no forms, no cookies, no analytics and no tracking scripts. It stores exactly one value in the local storage of your browser, called <code>latifi.lang</code>. The value is "en" or "es" and it remembers your language. It stays on your device and the site never sends it anywhere.</p>
+        <p>In the app and the API, we handle this data:</p>
+        <ul role="list">
+          <li>your wallet address, which is public on the blockchain;</li>
+          <li>your display name, up to 80 characters, which anyone can read next to your address;</li>
+          <li>your contact, an email address or a phone number, which only you can see and which the app asks for before you publish or fund a loan;</li>
+          <li>a sign-in challenge, a random number with its issue and expiry times, which you use once to prove that you control your wallet;</li>
+          <li>your reputation, which the API calculates from your payments and your profile.</li>
+        </ul>
+        <p>When you use the app, the server that runs the API can see the IP address of your requests. To limit abuse, the API counts requests per IP address and per wallet address, and it keeps those counts in memory. The team added no analytics, advertising or tracking tools of its own to the app.</p>
+        <h2>2. What we never collect (keys, funds)</h2>
+        <p>LatiFi never holds your private key, your recovery phrase or your funds. The app creates your key on your phone and signs transactions there. Nothing that could move your money reaches our servers.</p>
+        <p>There are no passwords, because you sign in by signing a message with your wallet. The app does not ask Android for access to your location, contacts, photos, camera or microphone.</p>
+        <h2>3. How we use it</h2>
+        <p>We use your display name and your reputation so that lenders can see who is asking before they fund a request. We use your contact to mark your profile as complete. The API shows it only to you and never returns it for any other address.</p>
+        <p>We use the sign-in challenge to check that you control the wallet, and then the API gives your app a session token that lasts 15 minutes. We use IP addresses and wallet addresses only to limit how often someone can ask for a sign-in.</p>
+        <p>We do not sell your data and we do not use it for advertising.</p>
+        <h2>4. Public blockchain data</h2>
+        <p>The smart contract records loan requests, funding, payments and defaults on Polygon Amoy, a public blockchain. Anyone can read them. They include your wallet address, the loan amounts and the dates.</p>
+        <p>Nobody can edit or erase these records, not you and not the team. The contract has no owner and no administrator. The API copies the records into its own database to show the request feed to lenders and to calculate reputation.</p>
+        <p>If your display name identifies you, anyone can connect your wallet address and your loans to you. Choose a name that you are comfortable making public.</p>
+        <h2>5. Services we rely on</h2>
+        <p>These services take part in how LatiFi works. Each one handles data under its own policy.</p>
+        <ul role="list">
+          <li>GitHub Pages hosts this website. GitHub can log request data, such as your IP address.</li>
+          <li>The API runs on a server that the project team operates, a virtual private server at Hetzner, with its database on the same server.</li>
+          <li>A public Polygon Amoy node, PublicNode by default, receives the transactions that your app sends and the IP address of the app.</li>
+          <li>Reown (WalletConnect) provides the optional connection to a wallet you already own. It takes part only if you choose that option.</li>
+          <li>ExchangeRate-API supplies the exchange rates that the API shows in local currencies. The API asks it for rates and sends it no data about you.</li>
+        </ul>
+        <p>This site has a place for a product video. It is switched off today. If the team switches it on, your browser will load the video from a third party video host, and that host will see your IP address. The page makes no other request to another website.</p>
+        <h2>6. How long we keep it</h2>
+        <p>Sign-in challenges are deleted about 24 hours after they expire. Session tokens expire after 15 minutes. The request counts used to limit abuse stay in memory and are dropped when they go idle.</p>
+        <p>The team has not set a retention period for profiles (display name and contact). They stay in the API database until someone removes them. The language value stays in your browser until you clear the data of this site.</p>
+        <p>Records on the blockchain are permanent.</p>
+        <h2>7. Your choices</h2>
+        <p>You can browse this website without giving any data. You can delete the language value whenever you want by clearing the data of this site in your browser.</p>
+        <p>You can change your display name and your contact in the app whenever you want. If you prefer privacy, choose a display name that does not identify you. You need a complete profile to publish or fund a loan.</p>
+        <p>The API has no operation for deleting a profile yet. To ask the team to remove yours, use the contact route below and give only your wallet address, which is already public. Blockchain records cannot be removed.</p>
+        <h2>8. Children</h2>
+        <p>LatiFi is an academic demonstration for adults who can take part in a loan. It is not designed for children, and the team does not knowingly collect their data. If you believe that a child created a profile, tell us through the contact route below so that the team can review it.</p>
+        <h2>9. Changes</h2>
+        <p>The team can update this policy as the project changes. The new version replaces the old one on this page, and the date at the top shows when it changed. If the website starts to use analytics or cookies, this page will say so first.</p>
+        <h2>10. Contact</h2>
+        <p>To ask a question or report a problem, open an issue in the <a href="https://github.com/Arquitectura-de-Softwares-Emergentes/latifi-landing/issues">public issue tracker</a> of the LatiFi website repository on GitHub. The project has no public email address or postal address yet.</p>
+        <p>Anyone can read what you post there. Never share a private key, a recovery phrase, an email address or a phone number.</p>
+      </article>
+    </div>
+  </main>
+  <footer class="site-footer on-dark">
+    <div class="container footer-layout">
+      <img class="footer-logo" src="img/logo-on-dark.svg" alt="LatiFi" width="114" height="26">
+      <div class="footer-links">
+        <nav class="legal-nav" aria-label="Legal">
+          <ul role="list">
+            <li><a href="terms.html">Terms and conditions</a></li>
+            <li><a href="privacy.html" aria-current="page">Privacy policy</a></li>
+          </ul>
+        </nav>
+          <nav class="lang-switch lang-switch-footer" aria-label="Language (footer)">
+            <a href="privacy.html" hreflang="en" lang="en" aria-current="page">English</a>
+            <a href="es/privacy.html" hreflang="es-419" lang="es-419">Español</a>
+          </nav>
+      </div>
+      <div class="footer-text">
+        <p>SI728 Emerging Software Architectures, UPC. Academic project on a test network.</p>
+        <p>Academic demo on a test network. The money in the app has no real value.</p>
+      </div>
+    </div>
+  </footer>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
