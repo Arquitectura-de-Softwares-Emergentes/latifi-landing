@@ -420,6 +420,25 @@ function initHeaderShadow() {
   });
 }
 
+// Back to top: shown after two viewport heights of scroll. It is not announced (no live region);
+// activating it jumps to the top and moves keyboard focus to the hero container.
+function initBackToTop() {
+  const link = document.querySelector('.back-to-top');
+  const top = document.getElementById('top');
+  if (!link || !top) {
+    return;
+  }
+  onScrollFrame(() => {
+    link.hidden = window.scrollY <= window.innerHeight * 2;
+  });
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    // A jump, not an animation: two screens of smooth scrolling take longer than 500 ms in Chrome.
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    top.focus({ preventScroll: true });
+  });
+}
+
 document.addEventListener('click', (event) => {
   onLanguageClick(event);
   onSegmentClick(event);
@@ -432,6 +451,7 @@ document.addEventListener(VIDEO_REFRESH_EVENT, initVideo);
 reconcileHash();
 initMenu();
 initHeaderShadow();
+initBackToTop();
 initTabs();
 initVideo();
 

@@ -1113,6 +1113,212 @@ function makeScenarios(base, siteDir) {
     }
   });
 
+  // ---- Responsive and accessibility measurements (plan 06-04, every staged page) ----
+
+  // Elements that clip their own content (overflow other than visible) and really cut it.
+  const CLIPPED = `(() => [...document.querySelectorAll('body *')].filter((el) => {
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || el.tagName === 'PROGRESS' || el.closest('svg') && el.tagName !== 'svg') { return false; }
+    const clipX = cs.overflowX !== 'visible';
+    const clipY = cs.overflowY !== 'visible';
+    return (clipX && el.scrollWidth > el.clientWidth + 1) || (clipY && el.scrollHeight > el.clientHeight + 1);
+  }).map((el) => el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.split(' ')[0] : '') + ' ' + el.scrollWidth + 'x' + el.scrollHeight + ' in ' + el.clientWidth + 'x' + el.clientHeight))()`;
+
+  // Visible boxes and text runs that end beyond the right edge of the viewport.
+  const BEYOND = `(() => {
+    const out = [];
+    const name = (el) => el.tagName.toLowerCase() + '.' + (typeof el.className === 'string' ? el.className : '');
+    for (const el of document.querySelectorAll('body *')) {
+      if (el.closest('svg') || getComputedStyle(el).visibility === 'hidden') { continue; }
+      const r = el.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0 && r.right > innerWidth + 1) { out.push(name(el) + ' right ' + Math.round(r.right)); }
+      for (const node of el.childNodes) {
+        if (node.nodeType !== 3 || !node.textContent.trim()) { continue; }
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const t = range.getBoundingClientRect();
+        if (t.width > 0 && t.right > innerWidth + 1) { out.push('text "' + node.textContent.trim().slice(0, 20) + '" in ' + name(el) + ' right ' + Math.round(t.right)); }
+      }
+    }
+    return out.slice(0, 6);
+  })()`;
+
+  const everyPage = (siteDir) => {
+    const pages = listPages(siteDir);
+    assert(pages.length >= 2, `only ${pages.length} pages found in the staged site`);
+    return pages;
+  };
+
+  scenario('overflow-320', async (t) => {
+    for (const pagePath of everyPage(siteDir)) {
+      await t.open(base + pagePath.slice(1), { width: 320, height: 640 });
+      const state = await t.evaluate(`({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth, beyond: ${BEYOND} })`);
+      assert(state.scroll <= state.client, `${pagePath}: scrollWidth ${state.scroll} exceeds clientWidth ${state.client} at 320px (${state.beyond.join(' | ')})`);
+      assert(state.beyond.length === 0, `${pagePath}: boxes end beyond the viewport at 320px: ${state.beyond.join(' | ')}`);
+    }
+  });
+
+  scenario('text-zoom-200', async (t) => {
+    // Text at 200 percent. Two viewports: 640 wide (320 CSS px at a true 200 percent page zoom, as
+    // the plan states) and 320 wide (the harsher case: text doubles but the layout stays Compact).
+    for (const pagePath of everyPage(siteDir)) {
+      for (const width of [640, 320]) {
+        await t.open(base + pagePath.slice(1), { width, height: 800 });
+        await t.evaluate("document.documentElement.style.fontSize = '200%'");
+        await sleep(150);
+        const state = await t.evaluate(`({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth,
+          clipped: ${CLIPPED}, beyond: ${BEYOND}, header: document.querySelector('.site-header').getBoundingClientRect().height })`);
+        const where = `${pagePath} at ${width}px and 200 percent text`;
+        assert(state.scroll <= state.client, `${where}: horizontal scroll (${state.scroll} over ${state.client}); boxes beyond: ${state.beyond.join(' | ')}`);
+        assert(state.clipped.length === 0, `${where}: clipped content: ${state.clipped.join(' | ')}`);
+        assert(state.beyond.length === 0, `${where}: boxes beyond the viewport: ${state.beyond.join(' | ')}`);
+      }
+    }
+  });
+
+  scenario('spacing-override', async (t) => {
+    // WCAG 2.1 SC 1.4.12 overrides. The page CSP forbids injected style elements, so bypass it for this state test.
+    await t.cdp('Page.setBypassCSP', { enabled: true });
+    const rules = `* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; }
+      p { margin-bottom: 2em !important; }`;
+    for (const pagePath of everyPage(siteDir)) {
+      for (const width of [320, 1280]) {
+        await t.open(base + pagePath.slice(1), { width, height: 800 });
+        await t.evaluate(`(() => { const style = document.createElement('style'); style.textContent = ${JSON.stringify(rules)}; document.head.appendChild(style); })()`);
+        await sleep(150);
+        const state = await t.evaluate(`({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth,
+          clipped: ${CLIPPED}, beyond: ${BEYOND}, spaced: getComputedStyle(document.querySelector('p')).letterSpacing })`);
+        const where = `${pagePath} at ${width}px with the SC 1.4.12 overrides`;
+        assert(state.spaced !== 'normal', `${where}: the overrides did not apply`);
+        assert(state.scroll <= state.client, `${where}: horizontal scroll (${state.scroll} over ${state.client})`);
+        assert(state.clipped.length === 0, `${where}: clipped content: ${state.clipped.join(' | ')}`);
+        assert(state.beyond.length === 0, `${where}: boxes beyond the viewport: ${state.beyond.join(' | ')}`);
+      }
+    }
+  });
+
+  scenario('targets-48', async (t) => {
+    const offenders = [];
+    for (const pagePath of everyPage(siteDir)) {
+      for (const width of [390, 1280]) {
+        for (const menuOpen of width < 1024 ? [false, true] : [false]) {
+          await t.open(base + pagePath.slice(1), { width, height: 800 });
+          if (menuOpen) {
+            await t.click('#menu-toggle');
+          }
+          const found = await t.evaluate(`[...document.querySelectorAll('a, button, summary, [role="tab"]')].filter((el) => {
+            const cs = getComputedStyle(el);
+            const r = el.getBoundingClientRect();
+            if (cs.display === 'none' || cs.visibility === 'hidden' || r.width === 0 || r.height === 0) { return false; }
+            if (el.classList.contains('skip-link') && r.right <= 0) { return false; }
+            if (el.closest('.legal')) { return false; }
+            return r.width < 47.5 || r.height < 47.5;
+          }).map((el) => (el.textContent.trim().slice(0, 24) || el.getAttribute('aria-label') || el.tagName) + ' ' + Math.round(el.getBoundingClientRect().width) + 'x' + Math.round(el.getBoundingClientRect().height))`);
+          for (const item of found) {
+            offenders.push(`${pagePath} ${width}px${menuOpen ? ' menu open' : ''}: ${item}`);
+          }
+        }
+      }
+    }
+    assert(offenders.length === 0, `targets under 48 by 48: ${offenders.join(' | ')}`);
+  });
+
+  scenario('reduced-motion', async (t) => {
+    const MOTION = `({
+      scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,
+      btn: getComputedStyle(document.querySelector('.hero .btn-primary')).transitionDuration,
+      header: getComputedStyle(document.querySelector('.site-header')).transitionDuration,
+      longest: Math.max(...[...document.querySelectorAll('*')].flatMap((el) => {
+        const cs = getComputedStyle(el);
+        return [cs.transitionDuration, cs.animationDuration].flatMap((v) => v.split(',')).map((v) => { const n = parseFloat(v); return v.trim().endsWith('ms') ? n / 1000 : n; });
+      })),
+    })`;
+    const seconds = (list) => Math.max(...list.split(',').map((v) => { const n = parseFloat(v); return v.trim().endsWith('ms') ? n / 1000 : n; }));
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      const normal = await t.evaluate(MOTION);
+      assert(seconds(normal.btn) > 0.01 && seconds(normal.header) > 0.01, `${lang.code}: without a preference the button and header have no transition (${normal.btn}, ${normal.header}), so the check below proves nothing`);
+      assert(normal.longest <= 0.2, `${lang.code}: a transition or animation lasts ${normal.longest}s, over the 200 ms budget`);
+      await t.cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+      await t.open(base + lang.path);
+      const reduced = await t.evaluate(MOTION);
+      assert(seconds(reduced.btn) <= 0.00001 + 1e-9, `${lang.code}: .btn transition is ${reduced.btn} under reduced motion`);
+      assert(seconds(reduced.header) <= 0.00001 + 1e-9, `${lang.code}: header transition is ${reduced.header} under reduced motion`);
+      assert(reduced.longest <= 0.00001 + 1e-9, `${lang.code}: something still runs ${reduced.longest}s under reduced motion`);
+      assert(reduced.scrollBehavior === 'auto', `${lang.code}: scroll-behavior is ${reduced.scrollBehavior} under reduced motion`);
+      await t.cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
+    }
+  });
+
+  scenario('back-to-top', async (t) => {
+    for (const lang of LANGS) {
+      await t.open(base + lang.path, { width: 1280, height: 800 });
+      const read = () => t.evaluate(`(() => {
+        const link = document.querySelector('.back-to-top');
+        const r = link.getBoundingClientRect();
+        return { hidden: link.hidden, display: getComputedStyle(link).display, w: Math.round(r.width), h: Math.round(r.height),
+          label: link.getAttribute('aria-label'), href: link.getAttribute('href'), y: scrollY, activeId: document.activeElement.id,
+          live: !!link.closest('[aria-live]') || link.hasAttribute('aria-live') || link.hasAttribute('role') };
+      })()`);
+      let state = await read();
+      assert(state.hidden && state.display === 'none', `${lang.code}: back to top is shown at the top of the page`);
+      assert(state.href === '#top' && state.label === (lang.code === 'en' ? 'Back to top' : 'Volver arriba'), `${lang.code}: back to top is ${state.href} "${state.label}"`);
+      assert(!state.live, `${lang.code}: back to top sits in a live region or carries a role`);
+
+      await t.evaluate('window.scrollTo({ top: innerHeight * 1.9, behavior: "instant" })');
+      await sleep(250);
+      state = await read();
+      assert(state.hidden, `${lang.code}: back to top is shown after only 1.9 viewport heights`);
+
+      await t.evaluate('window.scrollTo({ top: innerHeight * 2.1, behavior: "instant" })');
+      await t.waitFor("!document.querySelector('.back-to-top').hidden", `${lang.code}: back to top after 2.1 viewport heights`, 2000);
+      state = await read();
+      assert(state.w >= 48 && state.h >= 48, `${lang.code}: back to top is ${state.w} by ${state.h}`);
+
+      await t.press('Tab');
+      await t.evaluate("document.querySelector('.back-to-top').focus()");
+      await t.press('Enter');
+      await t.waitFor('window.scrollY < 5', `${lang.code}: scrollY under 5 after back to top`, 500);
+      state = await read();
+      assert(state.activeId === 'top', `${lang.code}: after back to top focus is on "${state.activeId}", not #top`);
+      await t.waitFor("document.querySelector('.back-to-top').hidden", `${lang.code}: back to top hidden again at the top`, 1000);
+    }
+  });
+
+  scenario('sticky-header-focus', async (t) => {
+    // Instant scrolling (reduced motion) keeps the 60 key presses fast; the overlap rule does not depend on motion.
+    await t.cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    for (const lang of LANGS) {
+      for (const width of [390, 1280]) {
+        await t.open(base + lang.path, { width, height: 800 });
+        await t.evaluate('window.scrollTo(0, 0); document.activeElement.blur()');
+        const seen = [];
+        let reachedFooter = false;
+        for (let i = 0; i < 60; i += 1) {
+          await t.press('Tab');
+          const focus = await t.evaluate(`(() => {
+            const el = document.activeElement;
+            if (!el || el === document.body || el === document.documentElement) { return null; }
+            const header = document.querySelector('.site-header').getBoundingClientRect();
+            const r = el.getBoundingClientRect();
+            return { name: (el.textContent.trim().slice(0, 24) || el.getAttribute('aria-label') || el.tagName), skip: el.classList.contains('skip-link'),
+              inHeader: !!el.closest('.site-header'), inFooter: !!el.closest('.site-footer'), top: r.top, headerBottom: header.bottom, bottom: r.bottom, vh: innerHeight };
+          })()`);
+          if (focus === null) {
+            break;
+          }
+          seen.push(focus.name);
+          reachedFooter = reachedFooter || focus.inFooter;
+          if (focus.skip || focus.inHeader) {
+            continue;
+          }
+          assert(focus.top >= focus.headerBottom - 0.5, `${lang.code} at ${width}px: "${focus.name}" has top ${Math.round(focus.top)} under the header (bottom ${Math.round(focus.headerBottom)})`);
+        }
+        assert(seen.length >= 15 && reachedFooter, `${lang.code} at ${width}px: ${seen.length} Tab stops reached and the footer ${reachedFooter ? 'was' : 'was not'} reached, the check did not walk the page`);
+      }
+    }
+  });
+
   return scenarios;
 }
 
@@ -1127,6 +1333,9 @@ async function takeShots(connection, base, shotsDir) {
     for (const viewport of [{ width: 1280, height: 800 }, { width: 1024, height: 800 }, { width: 600, height: 800 }, { width: 320, height: 640 }]) {
       for (const lang of LANGS) {
         await page.open(base + lang.path, viewport);
+        // Fonts and the smooth scroll settle first, so the capture clip matches the final page height.
+        await page.evaluate('document.fonts.ready.then(() => true)');
+        await sleep(400);
         written.push(await page.screenshot(`${lang.code}-${viewport.width}`));
       }
     }
@@ -1187,7 +1396,7 @@ async function main() {
       try {
         await Promise.race([
           item.run(page),
-          sleep(60000).then(() => { throw new Error('scenario timed out after 60s'); }),
+          sleep(120000).then(() => { throw new Error('scenario timed out after 120s'); }),
         ]);
         passed += 1;
         console.log(`PASS ${item.name}`);
