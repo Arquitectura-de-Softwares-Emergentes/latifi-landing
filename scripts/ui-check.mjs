@@ -1122,6 +1122,8 @@ function makeScenarios(base, siteDir) {
   const CLIPPED = `(() => [...document.querySelectorAll('body *')].filter((el) => {
     const cs = getComputedStyle(el);
     if (cs.display === 'none' || el.tagName === 'PROGRESS' || el.closest('svg') && el.tagName !== 'svg') { return false; }
+    // A labelled, keyboard-focusable scroll region is the accessible way to offer a screen gallery.
+    if (el.matches('.gallery[role="region"][tabindex="0"][aria-label]')) { return false; }
     const clipX = cs.overflowX !== 'visible';
     const clipY = cs.overflowY !== 'visible';
     return (clipX && el.scrollWidth > el.clientWidth + 1) || (clipY && el.scrollHeight > el.clientHeight + 1);
@@ -1132,7 +1134,7 @@ function makeScenarios(base, siteDir) {
     const out = [];
     const name = (el) => el.tagName.toLowerCase() + '.' + (typeof el.className === 'string' ? el.className : '');
     for (const el of document.querySelectorAll('body *')) {
-      if (el.closest('svg') || getComputedStyle(el).visibility === 'hidden') { continue; }
+      if (el.closest('svg') || el.closest('.gallery[role="region"][tabindex="0"][aria-label]') || getComputedStyle(el).visibility === 'hidden') { continue; }
       const r = el.getBoundingClientRect();
       if (r.width > 0 && r.height > 0 && r.right > innerWidth + 1) { out.push(name(el) + ' right ' + Math.round(r.right)); }
       for (const node of el.childNodes) {
