@@ -1,14 +1,16 @@
 # latifi-landing
 
-The public website of LatiFi, a peer to peer lending app for Android that runs on a test network. This repository holds a static site in English and Spanish: plain HTML5, CSS3 and a small JavaScript file, with no build step and no runtime libraries. The only dependency is Lighthouse, which the checks use and which never reaches the site.
+The public website of LatiFi, a peer to peer lending app for Android that runs on a test network. This repository holds a static site in Spanish (the root pages) and English (the `en/` folder): plain HTML5, CSS3 and a small JavaScript file, with no build step and no runtime libraries. The only dependency is Lighthouse, which the checks use and which never reaches the site.
 
 Pages:
 
-| Page | English | Spanish |
-| ---- | ------- | ------- |
-| Home | `index.html` | `es/index.html` |
-| Terms and conditions | `terms.html` | `es/terms.html` |
-| Privacy policy | `privacy.html` | `es/privacy.html` |
+| Page | Spanish (root, default) | English |
+| ---- | ----------------------- | ------- |
+| Home | `index.html` | `en/index.html` |
+| Terms and conditions | `terms.html` | `en/terms.html` |
+| Privacy policy | `privacy.html` | `en/privacy.html` |
+
+Spanish is the primary language and `x-default` points to it. A small inline script sends a visitor who chose English (`localStorage` key `latifi.lang` set to `en`) from a Spanish page to `en/<page>`, and a visitor who chose Spanish from an English page to `../<page>`.
 
 Everything else the site publishes is `css/`, `js/`, `img/`, `robots.txt` and `sitemap.xml`. The deploy copies only that allowlist, see `scripts/stage-site.mjs`.
 
@@ -30,7 +32,7 @@ bash scripts/check-csp.test.sh             # CSP guard self-test
 node scripts/check-meta.mjs --self-test    # meta tags, canonical, hreflang, sitemap, robots
 node scripts/check-meta.mjs --strict
 node scripts/check-i18n-parity.mjs --self-test
-node scripts/check-i18n-parity.mjs         # English and Spanish pages carry the same structure
+node scripts/check-i18n-parity.mjs         # Spanish (root) and English (en/) pages carry the same structure
 node scripts/check-contrast.mjs            # WCAG contrast computed from the real CSS tokens
 node scripts/ui-check.mjs                  # browser scenarios in headless Chrome
 node scripts/lighthouse-check.mjs          # Accessibility and SEO of six pages, 90 or higher
@@ -48,14 +50,14 @@ A push to `main` (a release merge) runs `.github/workflows/pages.yml`. It stages
 
 ## Replace the download link
 
-Until Phase 7 provides the real distribution URL, the Download for Android button points at the page itself and carries `data-placeholder="true"`. While that attribute exists, the status line "The download link goes live with the first release" stays visible.
+Until Phase 7 provides the real distribution URL, the Download for Android button points at the page itself and carries `data-placeholder="true"`. The page shows no status line or notice about it: the button is a placeholder link until the real URL exists.
 
-To switch it on, make two edits in each of `index.html` and `es/index.html`, in the Download section:
+To switch it on, make two edits in each of `index.html` and `en/index.html`, in the Download section:
 
-1. Set the `href` of the link (Download for Android, or Descargar para Android) to the real distribution URL.
+1. Set the `href` of the link (Descargar para Android, or Download for Android) to the real distribution URL.
 2. Remove the `data-placeholder="true"` attribute from that same link.
 
-The status line hides itself once the attribute is gone. Run `node scripts/ui-check.mjs` afterwards. If the new URL leaves the site, check the CSP: a plain link needs no change, because `default-src 'none'` does not restrict navigation.
+Run `node scripts/ui-check.mjs` afterwards. If the new URL leaves the site, check the CSP: a plain link needs no change, because `default-src 'none'` does not restrict navigation.
 
 ## Enable the product video
 
@@ -83,12 +85,12 @@ The new URL must start with `https://` and end with a slash. The command rewrite
 
 The app reads two settings, `LATIFI_TERMS_URL` and `LATIFI_PRIVACY_URL`. Use the site URL from `scripts/site-url.txt` plus these paths:
 
-| Setting | English | Spanish |
+| Setting | Spanish | English |
 | ------- | ------- | ------- |
-| `LATIFI_TERMS_URL` | `terms.html` | `es/terms.html` |
-| `LATIFI_PRIVACY_URL` | `privacy.html` | `es/privacy.html` |
+| `LATIFI_TERMS_URL` | `terms.html` | `en/terms.html` |
+| `LATIFI_PRIVACY_URL` | `privacy.html` | `en/privacy.html` |
 
-With the default site URL, the English terms page is `https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/terms.html`. GitHub Pages serves these paths with the `.html` extension, so keep it.
+With the default site URL, the Spanish terms page is `https://arquitectura-de-softwares-emergentes.github.io/latifi-landing/terms.html`. GitHub Pages serves these paths with the `.html` extension, so keep it.
 
 ## Analytics
 

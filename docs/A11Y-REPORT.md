@@ -5,7 +5,7 @@ Evidence record for the LatiFi landing page against WCAG 2.1 AA. Every automated
 ## Scope
 
 - Standard: WCAG 2.1 AA, applied through the project rules in A11Y.md.
-- Pages: six. The home page, the terms and conditions and the privacy policy, each in English and Spanish (`index.html`, `terms.html`, `privacy.html` and their `es/` counterparts).
+- Pages: six. The home page, the terms and conditions and the privacy policy, each in Spanish at the site root and in English (`index.html`, `terms.html`, `privacy.html` and their `en/` counterparts).
 - Theme: light only. Dark mode stays an app feature.
 - Not in scope: the Android app, which has its own accessibility work, and the product video, which is off until a captioned video exists.
 
@@ -48,11 +48,11 @@ No state relies on color alone. Chips, tabs, the current language and FAQ items 
 | Page | Accessibility | SEO |
 |---|---|---|
 | `/` | 100 | 92 |
-| `/es/` | 100 | 92 |
+| `/en/` | 100 | 92 |
 | `/terms.html` | 100 | 92 |
 | `/privacy.html` | 100 | 92 |
-| `/es/terms.html` | 100 | 92 |
-| `/es/privacy.html` | 100 | 92 |
+| `/en/terms.html` | 100 | 92 |
+| `/en/privacy.html` | 100 | 92 |
 
 The 8 missing SEO points come from one audit, `robots-txt`. Lighthouse fetches `robots.txt` from the page, and the page CSP says `connect-src 'none'`, so the browser blocks the fetch. Relaxing the CSP for a score would undo a deliberate security decision, so the page keeps the stricter policy. The same command with `--live BASE_URL` audits the deployed site, and its result goes into the release record.
 
@@ -68,7 +68,7 @@ The 8 missing SEO points come from one audit, `robots-txt`. Lighthouse fetches `
 | `lang-hash-map` | A stored language keeps the visitor on the matching section after a redirect |
 | `storage-blocked` | The page works when `localStorage` throws, with no redirect and no error |
 | `no-js` | Without JavaScript the nav is visible, tab panels are stacked and the FAQ still opens |
-| `download-status` | While `data-placeholder` exists the link stays a normal link (never `aria-disabled`) and the status line is visible with the right text |
+| `download-status` | While `data-placeholder` exists the link stays a normal link (never `aria-disabled`) and the Download section carries no status line or notice |
 | `fonts-loaded` | The self-hosted font faces load |
 | `no-external-requests` | The page makes no request outside its own origin |
 | `tabs-keyboard` | The tabs follow the ARIA pattern: arrows, Home, End, selected state |
@@ -92,17 +92,21 @@ The 8 missing SEO points come from one audit, `robots-txt`. Lighthouse fetches `
 | `targets-48` | Every interactive element is at least 48 by 48 CSS px, with the menu open and closed |
 | `legal-structure` | The legal pages have the full tag set, hreflang pairs, one h1 and working footer links |
 | `legal-overflow` | A 200 character unbroken token wraps inside the column at 320 px |
-| `reduced-motion` | Transitions stay within 200 ms, stop under reduced motion, and smooth scrolling turns off |
+| `reduced-motion` | Transitions and entrance animations stay within 1 s, stop under reduced motion, and smooth scrolling turns off |
+| `reel-structure` | The "in action" section exists in both languages between How it works and Screens, with three muted videos that carry a poster and an `aria-label` |
+| `reel-overflow` | The "in action" section causes no horizontal overflow at 320, 600, 1024 and 1280 px |
+| `reel-no-js` | Without JavaScript the videos keep their native controls and the custom buttons stay hidden |
+| `reel-buttons` | Each video has a visible play and pause button of at least 48 px, no video autoplays under `prefers-reduced-motion: reduce`, and the button label toggles between the play and pause texts (WCAG 2.2.2) |
 | `back-to-top` | Back to top is hidden at the top, appears after scrolling, is at least 48 px, is not a live region and moves focus to the top |
 | `sticky-header-focus` | The sticky header never covers the focused element while tabbing (SC 2.4.11) |
 
-Guards that run before the browser: `scripts/check-i18n-a11y.sh` (language attribute, skip link, single `main`, title and hreflang on every HTML file), `scripts/check-i18n-parity.mjs` (the Spanish pages mirror the English structure) and `scripts/check-csp.sh` (CSP and no inline styles or handlers).
+Guards that run before the browser: `scripts/check-i18n-a11y.sh` (language attribute, skip link, single `main`, title and hreflang on every HTML file), `scripts/check-i18n-parity.mjs` (the Spanish root pages and the English `en/` pages share one structure) and `scripts/check-csp.sh` (CSP and no inline styles or handlers).
 
 ## Visual additions
 
 The home pages carry app screenshots, three flat illustrations and an authored icon set. Rules that keep them accessible:
 
-- Every screenshot has a text alternative that describes the screen in the page language. The Spanish page uses only the Spanish captures. Decorative art (`loop.svg`, `trust.svg`) has an empty `alt`. The money path diagram (`flow.svg`) has a full description plus a caption.
+- Every screenshot has a text alternative that describes the screen in the page language. The Spanish pages use only the Spanish captures. Decorative art (`loop.svg`, `trust.svg`) has an empty `alt`. The money path diagram (`flow.svg`) has a full description plus a caption.
 - Phone frames are drawn in CSS. Images carry `width` and `height`, so nothing shifts while they load.
 - The screen gallery is a labelled `region` that takes keyboard focus, so the arrow keys scroll it. It uses scroll-snap, has no autoplay and shows all screens side by side from 1024 px. `scripts/ui-check.mjs` exempts that one region from the clipping and overflow measurements, because horizontal scrolling inside it is the intended behavior.
 - Icons share one 2 px rounded stroke on a 24 px grid and are `aria-hidden` next to a visible label.
@@ -150,7 +154,7 @@ VoiceOver (Safari) or NVDA:
 - [ ] The tabs announce their role, label and selected state.
 - [ ] FAQ items announce expanded or collapsed.
 - [ ] The menu button announces its name and expanded state.
-- [ ] The Download section announces that the link goes live with the first release, while `data-placeholder` is present.
+- [ ] The Download button announces its name and is a normal link, while `data-placeholder` is present.
 - [ ] The language switch links are announced in their own language.
 
 Also open the live site on a physical phone, in portrait and landscape, in both languages: no horizontal scroll, readable text and comfortable touch targets.
@@ -162,4 +166,4 @@ Also open the live site on a physical phone, in portrait and landscape, in both 
 - `js/main.js` is above the 8 KB size target. It is a target, not a gate.
 - The manual pass is recorded outside this repository. This file holds the checklist, not the results.
 - The legal text was reviewed by the project owner, not by a lawyer. The open points are tracked in the phase summary.
-- The product video is off. When it is enabled it needs captions and a transcript, and the pages need a `frame-src` entry. See the README.
+- The three short app clips in the "in action" section are muted, never autoplay under reduced motion and carry a pause button. They have no audio track, so they need no captions; each has a text description in its caption. The product video slot below Benefits is off. When it is enabled it needs captions and a transcript, and the pages need a `frame-src` entry. See the README.

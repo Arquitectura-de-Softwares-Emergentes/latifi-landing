@@ -14,9 +14,9 @@ TOTAL=0
 
 fresh() {
   rm -rf "$WORK/site"
-  mkdir -p "$WORK/site/es"
+  mkdir -p "$WORK/site/en"
   cp "$REPO/index.html" "$WORK/site/index.html"
-  cp "$REPO/es/index.html" "$WORK/site/es/index.html"
+  cp "$REPO/en/index.html" "$WORK/site/en/index.html"
 }
 
 # mutate FILE SED_EXPRESSION
@@ -41,28 +41,28 @@ expect() {
 fresh
 expect "unmodified copy passes" 0
 
-fresh; mutate index.html 's/<html lang="en-US">/<html>/'
+fresh; mutate en/index.html 's/<html lang="en-US">/<html>/'
 expect "missing lang" 1
 
-fresh; mutate es/index.html 's/<html lang="es-419">/<html lang="fr">/'
+fresh; mutate index.html 's/<html lang="es-419">/<html lang="fr">/'
 expect "unsupported lang" 1
 
-fresh; mutate index.html 's#</body>#<main></main></body>#'
+fresh; mutate en/index.html 's#</body>#<main></main></body>#'
 expect "second main" 1
 
-fresh; mutate index.html 's/href="#main"/href="#top"/'
+fresh; mutate en/index.html 's/href="#main"/href="#top"/'
 expect "skip link removed" 1
 
-fresh; mutate index.html 's/ id="main"//'
+fresh; mutate en/index.html 's/ id="main"//'
 expect "main id removed" 1
 
-fresh; mutate es/index.html 's#<title>[^<]*</title>#<title> </title>#'
+fresh; mutate index.html 's#<title>[^<]*</title>#<title> </title>#'
 expect "empty title" 1
 
-fresh; mutate index.html '/<link rel="alternate" hreflang="es-419"/d'
+fresh; mutate en/index.html '/<link rel="alternate" hreflang="es-419"/d'
 expect "es-419 hreflang removed" 1
 
-fresh; mutate es/index.html '/hreflang="x-default"/d'
+fresh; mutate index.html '/hreflang="x-default"/d'
 expect "x-default hreflang removed" 1
 
 echo "PASS $PASS/$TOTAL"
