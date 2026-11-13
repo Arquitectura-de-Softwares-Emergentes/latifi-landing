@@ -1051,6 +1051,18 @@ h2:focus {
   max-width: 420px;
 }
 
+/* Long words must wrap at large text sizes (SC 1.4.4, 1.4.10). */
+.hero-lead,
+.cycle-step p,
+.rule dd,
+.verify-body p,
+.notice p,
+.phone figcaption,
+.screens-intro p,
+.rep-intro p {
+  overflow-wrap: anywhere;
+}
+
 /* Phone frame: drawn in CSS, no brand artwork. The screenshot keeps its own status bar. */
 .phone {
   box-sizing: border-box;
