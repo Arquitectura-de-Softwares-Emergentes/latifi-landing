@@ -12,6 +12,7 @@ const ID_MAP = {
   benefits: 'beneficios',
   security: 'seguridad',
   download: 'descarga',
+  'in-action': 'en-accion',
   screens: 'pantallas',
   reputation: 'reputacion',
   verify: 'verifica',
@@ -452,10 +453,73 @@ document.addEventListener('click', (event) => {
 document.addEventListener(VIDEO_REFRESH_EVENT, initVideo);
 
 reconcileHash();
+// App clips (the "in action" section). Without this script the videos show native controls.
+// With it, a clip plays only while it is on screen and the visitor has not asked for less
+// motion, and a visible button pauses or plays it (WCAG 2.2.2).
+function initReel() {
+  const items = Array.from(document.querySelectorAll('.reel-item'));
+  if (items.length === 0) {
+    return;
+  }
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const players = items.map((item) => {
+    const video = item.querySelector('video');
+    const button = item.querySelector('.reel-toggle');
+    if (!video || !button) {
+      return null;
+    }
+    video.removeAttribute('controls');
+    button.hidden = false;
+    const label = button.querySelector('span');
+    const sync = () => {
+      const playing = !video.paused;
+      const text = button.getAttribute(playing ? 'data-label-pause' : 'data-label-play');
+      button.setAttribute('aria-label', text);
+      label.textContent = text;
+      item.classList.toggle('is-playing', playing);
+    };
+    video.addEventListener('play', sync);
+    video.addEventListener('pause', sync);
+    button.addEventListener('click', () => {
+      if (video.paused) {
+        item.dataset.manual = 'play';
+        video.play().catch(() => {});
+      } else {
+        item.dataset.manual = 'pause';
+        video.pause();
+      }
+    });
+    sync();
+    return { item, video };
+  }).filter(Boolean);
+
+  if (!('IntersectionObserver' in window)) {
+    return;
+  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const player = players.find((p) => p.video === entry.target.querySelector('video'));
+      if (!player) {
+        return;
+      }
+      if (entry.isIntersecting) {
+        if (!reduced.matches && player.item.dataset.manual !== 'pause') {
+          player.video.play().catch(() => {});
+        }
+      } else {
+        player.video.pause();
+        delete player.item.dataset.manual;
+      }
+    });
+  }, { threshold: 0.6 });
+  players.forEach((p) => observer.observe(p.item));
+}
+
 initMenu();
 initHeaderShadow();
 initBackToTop();
 initTabs();
 initVideo();
+initReel();
 
 export { selectTab };

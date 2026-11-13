@@ -293,16 +293,20 @@ async function newPage(connection, shotsDir) {
       await send('Input.dispatchKeyEvent', { type: 'keyUp', ...base });
     },
     async click(selector) {
-      const point = await evaluate(`(() => {
+      const measure = () => evaluate(`(() => {
         const el = document.querySelector(${JSON.stringify(selector)});
         if (!el) { return null; }
         el.scrollIntoView({ block: 'center', behavior: 'instant' });
         const r = el.getBoundingClientRect();
         return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
       })()`);
+      let point = await measure();
       if (!point) {
         throw new Error(`nothing matches ${selector}`);
       }
+      // Scroll-driven reveals shift boxes on the frame after a jump: measure again once it settled.
+      await sleep(120);
+      point = (await measure()) || point;
       const mouse = { x: point.x, y: point.y, button: 'left', clickCount: 1 };
       await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: point.x, y: point.y });
       await send('Input.dispatchMouseEvent', { type: 'mousePressed', ...mouse });
@@ -358,14 +362,9 @@ function assert(condition, message) {
 // ---------------------------------------------------------------------------
 
 const LANGS = [
-  { code: 'en', path: '', section: 'download', label: 'Get the app', benefits: 'benefits', menuOpen: 'Open menu', menuClose: 'Close menu' },
-  { code: 'es', path: 'es/', section: 'descarga', label: 'Descargar la app', benefits: 'beneficios', menuOpen: 'Abrir menú', menuClose: 'Cerrar menú' },
+  { code: 'en', path: 'en/', section: 'download', label: 'Get the app', benefits: 'benefits', menuOpen: 'Open menu', menuClose: 'Close menu' },
+  { code: 'es', path: '', section: 'descarga', label: 'Descargar la app', benefits: 'beneficios', menuOpen: 'Abrir menú', menuClose: 'Cerrar menú' },
 ];
-
-const STATUS_TEXT = {
-  en: 'The download link goes live with the first release.',
-  es: 'El enlace de descarga estará disponible con la primera versión.',
-};
 
 const VIDEO_ERROR = {
   en: 'The video could not load. Read the transcript instead.',
@@ -427,65 +426,66 @@ function makeScenarios(base, siteDir) {
   });
 
   scenario('lang-switch-persist', async (t) => {
+    // Spanish is the root language, English lives under en/.
     await t.open(base);
-    await t.click('nav.lang-switch a[hreflang="es-419"]');
-    await t.waitFor("location.pathname.endsWith('/es/index.html')", 'Spanish page after the click');
-    await t.settleNavigation();
-    assert((await t.evaluate("localStorage.getItem('latifi.lang')")) === 'es', 'latifi.lang is not es after clicking Español');
-    assert((await t.evaluate("document.documentElement.lang")) === 'es-419', 'Spanish page has the wrong lang');
-
-    await t.open(base);
-    const afterEn = await t.evaluate('location.pathname');
-    assert(afterEn.endsWith('/es/'), `English URL with es stored ended on ${afterEn}`);
-
     await t.click('nav.lang-switch a[hreflang="en"]');
-    await t.waitFor("location.pathname.endsWith('/index.html') && !location.pathname.includes('/es/')", 'English page after the click');
+    await t.waitFor("location.pathname.endsWith('/en/index.html')", 'English page after the click');
     await t.settleNavigation();
     assert((await t.evaluate("localStorage.getItem('latifi.lang')")) === 'en', 'latifi.lang is not en after clicking English');
-
-    await t.open(base + 'es/');
-    const afterEs = await t.evaluate('location.pathname');
-    assert(!afterEs.includes('/es/'), `Spanish URL with en stored ended on ${afterEs}`);
     assert((await t.evaluate("document.documentElement.lang")) === 'en-US', 'English page has the wrong lang');
+
+    await t.open(base);
+    const afterEs = await t.evaluate('location.pathname');
+    assert(afterEs.endsWith('/en/'), `Spanish URL with en stored ended on ${afterEs}`);
+
+    await t.click('nav.lang-switch a[hreflang="es-419"]');
+    await t.waitFor("location.pathname.endsWith('/index.html') && !location.pathname.includes('/en/')", 'Spanish page after the click');
+    await t.settleNavigation();
+    assert((await t.evaluate("localStorage.getItem('latifi.lang')")) === 'es', 'latifi.lang is not es after clicking Español');
+
+    await t.open(base + 'en/');
+    const afterEn = await t.evaluate('location.pathname');
+    assert(!afterEn.includes('/en/'), `English URL with es stored ended on ${afterEn}`);
+    assert((await t.evaluate("document.documentElement.lang")) === 'es-419', 'Spanish page has the wrong lang');
   });
 
   scenario('lang-hash-map', async (t) => {
     // Inline entry script: stored language differs, the hash crosses the id map.
     await t.open(base);
-    await t.evaluate("localStorage.setItem('latifi.lang', 'es')");
+    await t.evaluate("localStorage.setItem('latifi.lang', 'en')");
     await t.blank();
-    await t.open(base + '#download');
+    await t.open(base + '#descarga');
     // The browser scrolls to the hash with smooth scrolling, so wait for it before measuring.
     await t.settleScroll();
     let state = await t.evaluate(`({ path: location.pathname, hash: location.hash,
-      visible: !!document.getElementById('descarga') && document.getElementById('descarga').getBoundingClientRect().top < innerHeight })`);
-    assert(state.path.endsWith('/es/'), `en#download with es stored ended on ${state.path}`);
-    assert(state.hash === '#descarga', `hash is ${state.hash}, expected #descarga`);
-    assert(state.visible, 'Download section is not visible on the Spanish page');
-
-    await t.evaluate("localStorage.setItem('latifi.lang', 'en')");
-    await t.blank();
-    await t.open(base + 'es/#descarga');
-    await t.settleScroll();
-    state = await t.evaluate(`({ path: location.pathname, hash: location.hash,
       visible: !!document.getElementById('download') && document.getElementById('download').getBoundingClientRect().top < innerHeight })`);
-    assert(!state.path.includes('/es/'), `es#descarga with en stored ended on ${state.path}`);
+    assert(state.path.endsWith('/en/'), `es#descarga with en stored ended on ${state.path}`);
     assert(state.hash === '#download', `hash is ${state.hash}, expected #download`);
     assert(state.visible, 'Download section is not visible on the English page');
+
+    await t.evaluate("localStorage.setItem('latifi.lang', 'es')");
+    await t.blank();
+    await t.open(base + 'en/#download');
+    await t.settleScroll();
+    state = await t.evaluate(`({ path: location.pathname, hash: location.hash,
+      visible: !!document.getElementById('descarga') && document.getElementById('descarga').getBoundingClientRect().top < innerHeight })`);
+    assert(!state.path.includes('/en/'), `en#download with es stored ended on ${state.path}`);
+    assert(state.hash === '#descarga', `hash is ${state.hash}, expected #descarga`);
+    assert(state.visible, 'Download section is not visible on the Spanish page');
 
     // reconcileHash in main.js: nothing stored, an id of the other language in the URL.
     await t.evaluate("localStorage.clear()");
     await t.blank();
-    await t.open(base + 'es/#download');
+    await t.open(base + 'en/#descarga');
     state = await t.evaluate(`({ path: location.pathname, hash: location.hash })`);
-    assert(state.path.endsWith('/es/'), `es#download without storage ended on ${state.path}`);
-    assert(state.hash === '#descarga', `reconcileHash left ${state.hash}, expected #descarga`);
+    assert(state.path.endsWith('/en/'), `en#descarga without storage ended on ${state.path}`);
+    assert(state.hash === '#download', `reconcileHash left ${state.hash}, expected #download`);
   });
 
   scenario('storage-blocked', async (t) => {
     // Seed a stored language first, then block the store: a throwing getItem must not redirect.
     await t.open(base);
-    await t.evaluate("localStorage.setItem('latifi.lang', 'es')");
+    await t.evaluate("localStorage.setItem('latifi.lang', 'en')");
     await t.addNewDocumentScript(`(() => {
       const blocked = function () { throw new DOMException('blocked', 'SecurityError'); };
       Storage.prototype.getItem = blocked;
@@ -493,13 +493,13 @@ function makeScenarios(base, siteDir) {
     })()`);
     await t.open(base);
     const path1 = await t.evaluate('location.pathname');
-    assert(!path1.includes('/es/'), `page redirected to ${path1} although storage throws`);
-    await t.click('nav.lang-switch a[hreflang="es-419"]');
-    await t.waitFor("location.pathname.endsWith('/es/index.html')", 'Spanish page with blocked storage');
+    assert(!path1.includes('/en/'), `page redirected to ${path1} although storage throws`);
+    await t.click('nav.lang-switch a[hreflang="en"]');
+    await t.waitFor("location.pathname.endsWith('/en/index.html')", 'English page with blocked storage');
     await t.settleNavigation();
-    await t.open(base + 'es/');
+    await t.open(base + 'en/');
     const path2 = await t.evaluate('location.pathname');
-    assert(path2.endsWith('/es/'), `Spanish page moved to ${path2} although storage throws`);
+    assert(path2.endsWith('/en/'), `English page moved to ${path2} although storage throws`);
     const errors = t.consoleErrors();
     assert(errors.length === 0, `console errors with blocked storage: ${errors.join(' | ')}`);
   });
@@ -511,37 +511,42 @@ function makeScenarios(base, siteDir) {
       const state = await t.evaluate(`({
         href: document.querySelector('.hero .btn-primary').getAttribute('href'),
         target: !!document.getElementById(${JSON.stringify(lang.section)}),
-        status: document.querySelector('.status').textContent.trim(),
-        display: getComputedStyle(document.querySelector('.status')).display,
+        placeholder: !!document.querySelector('#${lang.section} [data-placeholder]'),
+        status: document.querySelectorAll('.status').length,
       })`);
       assert(state.href === `#${lang.section}`, `${lang.code}: hero button href is ${state.href}`);
       assert(state.target, `${lang.code}: no section with id ${lang.section}`);
-      assert(state.status === STATUS_TEXT[lang.code], `${lang.code}: status text is "${state.status}"`);
-      assert(state.display !== 'none', `${lang.code}: status line is hidden without scripts`);
+      assert(state.placeholder, `${lang.code}: the Download button lost data-placeholder without scripts`);
+      assert(state.status === 0, `${lang.code}: a status line is back in the page`);
     }
   });
 
   scenario('download-status', async (t) => {
+    // The Download button stays a placeholder link until the real URL exists. The page carries no
+    // status line, no "read this first" notice and no test network warning around it.
     for (const lang of LANGS) {
       await t.open(base + lang.path);
       const state = await t.evaluate(`(() => {
         const link = document.querySelector('#${lang.section} [data-placeholder]');
-        const status = document.querySelector('#${lang.section} .status');
-        const r = status ? status.getBoundingClientRect() : null;
+        const section = document.getElementById(${JSON.stringify(lang.section)});
         return {
           hasLink: !!link,
           disabled: link ? link.getAttribute('aria-disabled') : null,
           href: link ? link.getAttribute('href') : null,
-          display: status ? getComputedStyle(status).display : null,
-          height: r ? r.height : 0,
-          text: status ? status.textContent.trim() : '',
+          placeholder: link ? link.getAttribute('data-placeholder') : null,
+          status: section.querySelectorAll('.status').length,
+          notice: section.querySelectorAll('.notice').length,
+          demoNotice: document.querySelectorAll('.demo-notice, .demo-tag').length,
+          visible: link ? link.getBoundingClientRect().height > 0 : false,
         };
       })()`);
       assert(state.hasLink, `${lang.code}: the Download link has no data-placeholder`);
+      assert(state.placeholder === 'true', `${lang.code}: data-placeholder is "${state.placeholder}"`);
       assert(state.disabled === null, `${lang.code}: the Download link carries aria-disabled`);
       assert(state.href === `#${lang.section}`, `${lang.code}: Download link href is ${state.href}`);
-      assert(state.display !== null && state.display !== 'none' && state.height > 0, `${lang.code}: status line is not visible`);
-      assert(state.text === STATUS_TEXT[lang.code], `${lang.code}: status text is "${state.text}"`);
+      assert(state.visible, `${lang.code}: the Download link is not visible`);
+      assert(state.status === 0 && state.notice === 0, `${lang.code}: the Download section still holds ${state.status} status and ${state.notice} notice elements`);
+      assert(state.demoNotice === 0, `${lang.code}: ${state.demoNotice} demo notice or demo tag elements remain`);
     }
   });
 
@@ -809,6 +814,109 @@ function makeScenarios(base, siteDir) {
     }
   });
 
+  // ---- "In action" video section ----
+
+  const REEL_IDS = { en: 'in-action', es: 'en-accion' };
+
+  scenario('reel-structure', async (t) => {
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      const state = await t.evaluate(`(() => {
+        const section = document.getElementById(${JSON.stringify(REEL_IDS[lang.code])});
+        if (!section) { return null; }
+        const how = document.getElementById(${JSON.stringify(lang.code === 'en' ? 'how-it-works' : 'como-funciona')});
+        const screens = document.getElementById(${JSON.stringify(lang.code === 'en' ? 'screens' : 'pantallas')});
+        const videos = [...section.querySelectorAll('video')];
+        const rank = (a, b) => !!(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+        return {
+          tag: section.tagName,
+          dark: section.classList.contains('section-dark'),
+          labelled: section.getAttribute('aria-labelledby'),
+          between: !!how && !!screens && rank(how, section) && rank(section, screens),
+          videos: videos.map((v) => ({ poster: v.getAttribute('poster'), label: (v.getAttribute('aria-label') || '').trim(),
+            src: v.querySelector('source') ? v.querySelector('source').getAttribute('src') : null, muted: v.muted, autoplay: v.hasAttribute('autoplay') })),
+          region: !!section.querySelector('.reel[role="region"][tabindex="0"][aria-label]'),
+        };
+      })()`);
+      assert(state, `${lang.code}: no section with id ${REEL_IDS[lang.code]}`);
+      assert(state.tag === 'SECTION' && state.dark && state.labelled, `${lang.code}: the in action section is ${state.tag}, dark ${state.dark}, aria-labelledby ${state.labelled}`);
+      assert(state.between, `${lang.code}: the in action section does not sit between How it works and Screens`);
+      assert(state.videos.length === 3, `${lang.code}: ${state.videos.length} videos, expected 3`);
+      state.videos.forEach((v, i) => {
+        assert(v.poster && /^img\/video\/.+\.webp$/.test(v.poster.replace(/^\.\.\//, '')), `${lang.code}: video ${i + 1} poster is ${v.poster}`);
+        assert(v.label.length > 10, `${lang.code}: video ${i + 1} has no aria-label`);
+        assert(v.src && /\.mp4$/.test(v.src), `${lang.code}: video ${i + 1} source is ${v.src}`);
+        assert(v.muted && !v.autoplay, `${lang.code}: video ${i + 1} must be muted and must not carry the autoplay attribute`);
+      });
+      assert(state.region, `${lang.code}: the reel is not a labelled, focusable scroll region`);
+    }
+  });
+
+  scenario('reel-overflow', async (t) => {
+    for (const lang of LANGS) {
+      for (const width of [320, 600, 1024, 1280]) {
+        await t.open(base + lang.path, { width, height: 800 });
+        await t.evaluate(`document.getElementById(${JSON.stringify(REEL_IDS[lang.code])}).scrollIntoView()`);
+        await sleep(200);
+        const state = await t.evaluate(`({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth, beyond: ${BEYOND} })`);
+        assert(state.scroll <= state.client, `${lang.code} at ${width}px: scrollWidth ${state.scroll} exceeds clientWidth ${state.client} (${state.beyond.join(' | ')})`);
+        assert(state.beyond.length === 0, `${lang.code} at ${width}px: boxes end beyond the viewport: ${state.beyond.join(' | ')}`);
+      }
+    }
+  });
+
+  scenario('reel-no-js', async (t) => {
+    await t.disableScripts(true);
+    for (const lang of LANGS) {
+      await t.open(base + lang.path);
+      const state = await t.evaluate(`(() => {
+        const section = document.getElementById(${JSON.stringify(REEL_IDS[lang.code])});
+        return { controls: [...section.querySelectorAll('video')].map((v) => v.hasAttribute('controls')),
+          buttons: [...section.querySelectorAll('.reel-toggle')].map((b) => b.hidden || getComputedStyle(b).display === 'none') };
+      })()`);
+      assert(state.controls.length === 3 && state.controls.every(Boolean), `${lang.code}: without scripts every video keeps its native controls`);
+      assert(state.buttons.every(Boolean), `${lang.code}: the play and pause buttons show without scripts`);
+    }
+  });
+
+  scenario('reel-buttons', async (t) => {
+    // Reduced motion: nothing may start by itself, and the button must drive the video both ways.
+    await t.cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    for (const lang of LANGS) {
+      await t.open(base + lang.path, { width: 1280, height: 900 });
+      await t.evaluate(`document.getElementById(${JSON.stringify(REEL_IDS[lang.code])}).scrollIntoView()`);
+      await sleep(900);
+      const read = () => t.evaluate(`[...document.querySelectorAll('#${REEL_IDS[lang.code]} .reel-item')].map((item) => {
+        const button = item.querySelector('.reel-toggle');
+        const r = button.getBoundingClientRect();
+        return { paused: item.querySelector('video').paused, hidden: button.hidden, display: getComputedStyle(button).display,
+          w: Math.round(r.width), h: Math.round(r.height), label: button.getAttribute('aria-label'),
+          play: button.getAttribute('data-label-play'), pause: button.getAttribute('data-label-pause'),
+          text: button.textContent.trim(), controls: item.querySelector('video').hasAttribute('controls') };
+      })`);
+      let items = await read();
+      assert(items.length === 3, `${lang.code}: ${items.length} reel items`);
+      items.forEach((item, i) => {
+        assert(item.paused, `${lang.code}: video ${i + 1} autoplays with prefers-reduced-motion: reduce`);
+        assert(!item.hidden && item.display !== 'none', `${lang.code}: the play button of video ${i + 1} is hidden although scripts run`);
+        assert(item.w >= 48 && item.h >= 48, `${lang.code}: the play button of video ${i + 1} is ${item.w} by ${item.h}, under 48`);
+        assert(item.label === item.play && item.text === item.play && item.play !== item.pause, `${lang.code}: video ${i + 1} label is "${item.label}", expected "${item.play}"`);
+        assert(!item.controls, `${lang.code}: video ${i + 1} keeps native controls next to the custom button`);
+      });
+
+      await t.evaluate(`document.querySelectorAll('#${REEL_IDS[lang.code]} .reel-toggle')[0].focus()`);
+      await t.press('Enter');
+      await t.waitFor(`(() => { const item = document.querySelector('#${REEL_IDS[lang.code]} .reel-item'); return !item.querySelector('video').paused && item.querySelector('.reel-toggle').getAttribute('aria-label') === item.querySelector('.reel-toggle').getAttribute('data-label-pause'); })()`, `${lang.code}: the first video plays and the label flips after the button`, 4000);
+      items = await read();
+      assert(items[0].label === items[0].pause && items[0].text === items[0].pause, `${lang.code}: label after play is "${items[0].label}", expected "${items[0].pause}"`);
+      assert(items[1].paused && items[2].paused, `${lang.code}: pressing one button started another video`);
+      await t.press('Enter');
+      await t.waitFor(`(() => { const item = document.querySelector('#${REEL_IDS[lang.code]} .reel-item'); return item.querySelector('video').paused && item.querySelector('.reel-toggle').getAttribute('aria-label') === item.querySelector('.reel-toggle').getAttribute('data-label-play'); })()`, `${lang.code}: the first video pauses and the label flips after the second press`, 2000);
+      items = await read();
+      assert(items[0].label === items[0].play && items[0].text === items[0].play, `${lang.code}: label after pause is "${items[0].label}", expected "${items[0].play}"`);
+    }
+  });
+
   // ---- Header and menu (plan 06-04) ----
 
   const viewport = (t, width, height) => t.cdp('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
@@ -1050,8 +1158,8 @@ function makeScenarios(base, siteDir) {
 
   scenario('example-card', async (t) => {
     const want = {
-      en: { title: 'Example loan', note: 'Illustrative figures, not real data', label: '2 of 3 installments paid', paid: 'Paid', terms: ['Amount', 'Term', 'Installments', 'Rate'] },
-      es: { title: 'Ejemplo de préstamo', note: 'Cifras ilustrativas, no son datos reales', label: '2 de 3 cuotas pagadas', paid: 'Pagado', terms: ['Monto', 'Plazo', 'Cuotas', 'Tasa'] },
+      en: { title: 'Example loan', label: '2 of 3 installments paid', paid: 'Paid', terms: ['Amount', 'Term', 'Installments', 'Rate'] },
+      es: { title: 'Ejemplo de préstamo', label: '2 de 3 cuotas pagadas', paid: 'Pagado', terms: ['Monto', 'Plazo', 'Cuotas', 'Tasa'] },
     };
     for (const lang of LANGS) {
       await t.open(base + lang.path);
@@ -1064,7 +1172,7 @@ function makeScenarios(base, siteDir) {
           tag: el.tagName,
           title: el.querySelector('.card-title').textContent.trim(),
           titleTag: el.querySelector('.card-title').tagName,
-          note: el.querySelector('.card-note').textContent.trim(),
+          notes: el.querySelectorAll('.card-note').length,
           groups: [...el.querySelectorAll('dl > div')].map((g) => g.querySelector('dt').textContent.trim() + '|' + g.querySelector('dd').textContent.trim()),
           value: bar.value, max: bar.max,
           label: bar.labels.length ? bar.labels[0].textContent.trim() : null,
@@ -1076,7 +1184,7 @@ function makeScenarios(base, siteDir) {
       const w = want[lang.code];
       assert(card.cards === 1 && card.tag === 'ARTICLE', `${lang.code}: ${card.cards} cards, first is ${card.tag}`);
       assert(card.title === w.title && card.titleTag === 'H2', `${lang.code}: card title is ${card.titleTag} "${card.title}"`);
-      assert(card.note === w.note, `${lang.code}: card note is "${card.note}"`);
+      assert(card.notes === 0, `${lang.code}: the illustrative figures note is back (${card.notes})`);
       assert(card.groups.length === 4 && card.groups.map((g) => g.split('|')[0]).join() === w.terms.join(), `${lang.code}: card terms are ${card.groups.join(' ; ')}`);
       assert(card.value === 2 && card.max === 3, `${lang.code}: progress is ${card.value} of ${card.max}`);
       assert(card.label === w.label, `${lang.code}: progress label is "${card.label}"`);
@@ -1110,7 +1218,7 @@ function makeScenarios(base, siteDir) {
         assert(f.logo && /img\/logo-on-dark\.svg$/.test(f.logo.src) && f.logo.alt === 'LatiFi' && f.logo.height >= 32, `${where}: footer logo is ${JSON.stringify(f.logo)}`);
         assert(f.legalLinks && f.legalLinks.join(',') === 'terms.html,privacy.html', `${where}: footer Legal nav links are ${JSON.stringify(f.legalLinks)}`);
         assert(f.heights.length === 4 && f.heights.every((h) => h >= 48), `${where}: footer link heights ${f.heights.join(', ')}`);
-        assert(f.texts.length === 2 && f.texts.every((x) => x.length > 20), `${where}: footer text is ${JSON.stringify(f.texts)}`);
+        assert(f.texts.length === 1 && f.texts.every((x) => x.length > 20 && !/test network|red de pruebas/i.test(x)), `${where}: footer text is ${JSON.stringify(f.texts)}`);
         assert(f.bg === 'rgb(11, 31, 58)', `${where}: footer background is ${f.bg}, not Navy 900`);
       }
     }
@@ -1123,7 +1231,7 @@ function makeScenarios(base, siteDir) {
     const cs = getComputedStyle(el);
     if (cs.display === 'none' || el.tagName === 'PROGRESS' || el.closest('svg') && el.tagName !== 'svg') { return false; }
     // A labelled, keyboard-focusable scroll region is the accessible way to offer a screen gallery.
-    if (el.matches('.gallery[role="region"][tabindex="0"][aria-label]')) { return false; }
+    if (el.matches(':is(.gallery, .reel)[role="region"][tabindex="0"][aria-label]')) { return false; }
     const clipX = cs.overflowX !== 'visible';
     const clipY = cs.overflowY !== 'visible';
     return (clipX && el.scrollWidth > el.clientWidth + 1) || (clipY && el.scrollHeight > el.clientHeight + 1);
@@ -1134,7 +1242,7 @@ function makeScenarios(base, siteDir) {
     const out = [];
     const name = (el) => el.tagName.toLowerCase() + '.' + (typeof el.className === 'string' ? el.className : '');
     for (const el of document.querySelectorAll('body *')) {
-      if (el.closest('svg') || el.closest('.gallery[role="region"][tabindex="0"][aria-label]') || getComputedStyle(el).visibility === 'hidden') { continue; }
+      if (el.closest('svg') || el.closest(':is(.gallery, .reel)[role="region"][tabindex="0"][aria-label]') || getComputedStyle(el).visibility === 'hidden') { continue; }
       const r = el.getBoundingClientRect();
       if (r.width > 0 && r.height > 0 && r.right > innerWidth + 1) { out.push(name(el) + ' right ' + Math.round(r.right)); }
       for (const node of el.childNodes) {
@@ -1203,6 +1311,8 @@ function makeScenarios(base, siteDir) {
   });
 
   scenario('targets-48', async (t) => {
+    // Layout sizes, not the first frame of an entrance or scroll reveal (those scale the box a little).
+    await t.cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
     const offenders = [];
     for (const pagePath of everyPage(siteDir)) {
       for (const width of [390, 1280]) {
@@ -1235,10 +1345,10 @@ function makeScenarios(base, siteDir) {
   // ---- Legal pages (plan 06-05) ----
 
   const LEGAL_PAGES = [
-    { lang: 'en', file: 'terms.html', other: 'es/terms.html', home: 'index.html', statement: /never holds your private keys or your funds/, academic: /academic demonstration on a test network/, updated: 'Last updated:', back: 'Back to home' },
-    { lang: 'en', file: 'privacy.html', other: 'es/privacy.html', home: 'index.html', statement: /never holds your private keys or your funds/, academic: /academic demonstration on a test network/, updated: 'Last updated:', back: 'Back to home' },
-    { lang: 'es', file: 'es/terms.html', other: 'terms.html', home: 'index.html', statement: /nunca custodia tus llaves privadas ni tus fondos/, academic: /demostración académica en una red de pruebas/, updated: 'Última actualización:', back: 'Volver al inicio' },
-    { lang: 'es', file: 'es/privacy.html', other: 'privacy.html', home: 'index.html', statement: /nunca custodia tus llaves privadas ni tus fondos/, academic: /demostración académica en una red de pruebas/, updated: 'Última actualización:', back: 'Volver al inicio' },
+    { lang: 'es', file: 'terms.html', other: 'en/terms.html', home: 'index.html', statement: /nunca custodia tus llaves privadas ni tus fondos/, academic: /demostración académica en una red de pruebas/, updated: 'Última actualización:', back: 'Volver al inicio' },
+    { lang: 'es', file: 'privacy.html', other: 'en/privacy.html', home: 'index.html', statement: /nunca custodia tus llaves privadas ni tus fondos/, academic: /demostración académica en una red de pruebas/, updated: 'Última actualización:', back: 'Volver al inicio' },
+    { lang: 'en', file: 'en/terms.html', other: '../terms.html', home: 'index.html', statement: /never holds your private keys or your funds/, academic: /academic demonstration on a test network/, updated: 'Last updated:', back: 'Back to home' },
+    { lang: 'en', file: 'en/privacy.html', other: '../privacy.html', home: 'index.html', statement: /never holds your private keys or your funds/, academic: /academic demonstration on a test network/, updated: 'Last updated:', back: 'Back to home' },
   ];
 
   scenario('legal-structure', async (t) => {
@@ -1307,17 +1417,17 @@ function makeScenarios(base, siteDir) {
       scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,
       btn: getComputedStyle(document.querySelector('.hero .btn-primary')).transitionDuration,
       header: getComputedStyle(document.querySelector('.site-header')).transitionDuration,
-      longest: Math.max(...[...document.querySelectorAll('*')].flatMap((el) => {
+      longest: Math.max(0, ...[...document.querySelectorAll('*')].flatMap((el) => {
         const cs = getComputedStyle(el);
         return [cs.transitionDuration, cs.animationDuration].flatMap((v) => v.split(',')).map((v) => { const n = parseFloat(v); return v.trim().endsWith('ms') ? n / 1000 : n; });
-      })),
+      }).filter((n) => Number.isFinite(n))),
     })`;
     const seconds = (list) => Math.max(...list.split(',').map((v) => { const n = parseFloat(v); return v.trim().endsWith('ms') ? n / 1000 : n; }));
     for (const lang of LANGS) {
       await t.open(base + lang.path);
       const normal = await t.evaluate(MOTION);
       assert(seconds(normal.btn) > 0.01 && seconds(normal.header) > 0.01, `${lang.code}: without a preference the button and header have no transition (${normal.btn}, ${normal.header}), so the check below proves nothing`);
-      assert(normal.longest <= 0.2, `${lang.code}: a transition or animation lasts ${normal.longest}s, over the 200 ms budget`);
+      assert(normal.longest <= 1, `${lang.code}: a transition or animation lasts ${normal.longest}s, over the 1 s budget (hero entrance 800 ms, hover and reveal shorter)`);
       await t.cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
       await t.open(base + lang.path);
       const reduced = await t.evaluate(MOTION);
@@ -1354,7 +1464,8 @@ function makeScenarios(base, siteDir) {
       state = await read();
       assert(state.w >= 48 && state.h >= 48, `${lang.code}: back to top is ${state.w} by ${state.h}`);
 
-      await t.press('Tab');
+      // No Tab press first: it would land on the skip link at the top of the page and scroll back
+      // there, hiding the link before the check can focus it.
       await t.evaluate("document.querySelector('.back-to-top').focus()");
       await t.press('Enter');
       await t.waitFor('window.scrollY < 5', `${lang.code}: scrollY under 5 after back to top`, 500);
@@ -1409,6 +1520,8 @@ async function takeShots(connection, base, shotsDir) {
   const { page, dispose } = await newPage(connection, shotsDir);
   const written = [];
   try {
+    // Scroll-driven reveals start sections at opacity 0 until they enter the view: capture the settled page.
+    await page.cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
     for (const viewport of [{ width: 1280, height: 800 }, { width: 1024, height: 800 }, { width: 600, height: 800 }, { width: 320, height: 640 }]) {
       for (const lang of LANGS) {
         await page.open(base + lang.path, viewport);

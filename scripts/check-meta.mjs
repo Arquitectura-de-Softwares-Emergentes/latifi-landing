@@ -23,16 +23,6 @@ const PAGES = [
   {
     file: 'index.html',
     rel: '',
-    lang: 'en-US',
-    locale: 'en_US',
-    altLocale: 'es_LA',
-    keywords: HOME_EN_KEYWORDS,
-    title: 'LatiFi: P2P microloans with verifiable reputation',
-    description: "LatiFi connects borrowers and lenders through blockchain-based P2P microloans. It never holds your funds and shows each applicant's reputation.",
-  },
-  {
-    file: 'es/index.html',
-    rel: 'es/',
     lang: 'es-419',
     locale: 'es_LA',
     altLocale: 'en_US',
@@ -43,16 +33,6 @@ const PAGES = [
   {
     file: 'terms.html',
     rel: 'terms.html',
-    lang: 'en-US',
-    locale: 'en_US',
-    altLocale: 'es_LA',
-    keywords: null,
-    title: 'LatiFi: terms and conditions',
-    description: 'Conditions of use for LatiFi Wallet: rules for requesting, funding and repaying P2P microloans.',
-  },
-  {
-    file: 'es/terms.html',
-    rel: 'es/terms.html',
     lang: 'es-419',
     locale: 'es_LA',
     altLocale: 'en_US',
@@ -63,16 +43,6 @@ const PAGES = [
   {
     file: 'privacy.html',
     rel: 'privacy.html',
-    lang: 'en-US',
-    locale: 'en_US',
-    altLocale: 'es_LA',
-    keywords: null,
-    title: 'LatiFi: privacy policy',
-    description: 'How LatiFi handles your profile data and why it never holds your private keys or your funds.',
-  },
-  {
-    file: 'es/privacy.html',
-    rel: 'es/privacy.html',
     lang: 'es-419',
     locale: 'es_LA',
     altLocale: 'en_US',
@@ -80,11 +50,42 @@ const PAGES = [
     title: 'LatiFi: política de privacidad',
     description: 'Cómo LatiFi trata tus datos de perfil y por qué nunca custodia tus llaves privadas ni tus fondos.',
   },
+  {
+    file: 'en/index.html',
+    rel: 'en/',
+    lang: 'en-US',
+    locale: 'en_US',
+    altLocale: 'es_LA',
+    keywords: HOME_EN_KEYWORDS,
+    title: 'LatiFi: P2P microloans with verifiable reputation',
+    description: "LatiFi connects borrowers and lenders through blockchain-based P2P microloans. It never holds your funds and shows each applicant's reputation.",
+  },
+  {
+    file: 'en/terms.html',
+    rel: 'en/terms.html',
+    lang: 'en-US',
+    locale: 'en_US',
+    altLocale: 'es_LA',
+    keywords: null,
+    title: 'LatiFi: terms and conditions',
+    description: 'Conditions of use for LatiFi Wallet: rules for requesting, funding and repaying P2P microloans.',
+  },
+  {
+    file: 'en/privacy.html',
+    rel: 'en/privacy.html',
+    lang: 'en-US',
+    locale: 'en_US',
+    altLocale: 'es_LA',
+    keywords: null,
+    title: 'LatiFi: privacy policy',
+    description: 'How LatiFi handles your profile data and why it never holds your private keys or your funds.',
+  },
 ];
 
-// The English page of each pair is the counterpart used for en, en-US and x-default.
-const ENGLISH_REL = { '': '', 'es/': '', 'terms.html': 'terms.html', 'es/terms.html': 'terms.html', 'privacy.html': 'privacy.html', 'es/privacy.html': 'privacy.html' };
-const SPANISH_REL = { '': 'es/', 'es/': 'es/', 'terms.html': 'es/terms.html', 'es/terms.html': 'es/terms.html', 'privacy.html': 'es/privacy.html', 'es/privacy.html': 'es/privacy.html' };
+// The Spanish page of each pair sits at the site root and is the counterpart used for es-419 and
+// x-default. The English page lives under en/ and is used for en and en-US.
+const ENGLISH_REL = { '': 'en/', 'en/': 'en/', 'terms.html': 'en/terms.html', 'en/terms.html': 'en/terms.html', 'privacy.html': 'en/privacy.html', 'en/privacy.html': 'en/privacy.html' };
+const SPANISH_REL = { '': '', 'en/': '', 'terms.html': 'terms.html', 'en/terms.html': 'terms.html', 'privacy.html': 'privacy.html', 'en/privacy.html': 'privacy.html' };
 
 const MAX_TITLE = 60;
 const MAX_DESCRIPTION = 155;
@@ -222,7 +223,7 @@ function checkPage(root, siteUrl, page, fail) {
     en: siteUrl + ENGLISH_REL[page.rel],
     'en-US': siteUrl + ENGLISH_REL[page.rel],
     'es-419': siteUrl + SPANISH_REL[page.rel],
-    'x-default': siteUrl + ENGLISH_REL[page.rel],
+    'x-default': siteUrl + SPANISH_REL[page.rel],
   };
   for (const [lang, href] of Object.entries(expectedAlternates)) {
     const found = alternates.filter((l) => l.hreflang === lang);
@@ -379,7 +380,7 @@ function checkSitemap(root, siteUrl, fail, strict, pages) {
         en: siteUrl + ENGLISH_REL[rel],
         'en-US': siteUrl + ENGLISH_REL[rel],
         'es-419': siteUrl + SPANISH_REL[rel],
-        'x-default': siteUrl + ENGLISH_REL[rel],
+        'x-default': siteUrl + SPANISH_REL[rel],
       };
       for (const [lang, href] of Object.entries(expected)) {
         const found = alternates.find((a) => a.hreflang === lang);
@@ -448,7 +449,7 @@ function printBudgets(root) {
 }
 
 // Self-test: each mutation edits a temporary copy and the check must then fail.
-const COPY = ['index.html', 'terms.html', 'privacy.html', 'robots.txt', 'sitemap.xml', 'css', 'js', 'img', 'es', 'scripts/site-url.txt'];
+const COPY = ['index.html', 'terms.html', 'privacy.html', 'robots.txt', 'sitemap.xml', 'css', 'js', 'img', 'en', 'scripts/site-url.txt'];
 
 function copyTo(root, dest) {
   for (const entry of COPY) {
@@ -471,13 +472,13 @@ function edit(dest, file, transform) {
 }
 
 const MUTATIONS = [
-  ['title over 60 characters', (dest) => edit(dest, 'index.html', (s) => s.replace('<title>LatiFi: P2P microloans with verifiable reputation</title>', '<title>LatiFi: P2P microloans with verifiable reputation for everyone in Peru and beyond</title>'))],
+  ['title over 60 characters', (dest) => edit(dest, 'en/index.html', (s) => s.replace('<title>LatiFi: P2P microloans with verifiable reputation</title>', '<title>LatiFi: P2P microloans with verifiable reputation for everyone in Peru and beyond</title>'))],
   ['canonical removed', (dest) => edit(dest, 'terms.html', (s) => s.replace(/\s*<link rel="canonical"[^>]*>/, ''))],
-  ['relative hreflang', (dest) => edit(dest, 'es/index.html', (s) => s.replace(/(<link rel="alternate" hreflang="es-419" href=")[^"]*(")/, '$1/latifi-landing/es/$2'))],
-  ['wrong og:locale', (dest) => edit(dest, 'privacy.html', (s) => s.replace('<meta property="og:locale" content="en_US">', '<meta property="og:locale" content="es_LA">'))],
+  ['relative hreflang', (dest) => edit(dest, 'en/index.html', (s) => s.replace(/(<link rel="alternate" hreflang="es-419" href=")[^"]*(")/, '$1/latifi-landing/$2'))],
+  ['wrong og:locale', (dest) => edit(dest, 'en/privacy.html', (s) => s.replace('<meta property="og:locale" content="en_US">', '<meta property="og:locale" content="es_LA">'))],
   ['missing og:image file', (dest) => rmSync(path.join(dest, 'img', 'og-latifi.png'))],
-  ['user-scalable no in the viewport', (dest) => edit(dest, 'es/terms.html', (s) => s.replace('initial-scale=1"', 'initial-scale=1, user-scalable=no"'))],
-  ['sitemap missing one URL', (dest) => edit(dest, 'sitemap.xml', (s) => s.replace(/\s*<url>\s*<loc>[^<]*es\/privacy\.html<\/loc>[\s\S]*?<\/url>/, ''))],
+  ['user-scalable no in the viewport', (dest) => edit(dest, 'terms.html', (s) => s.replace('initial-scale=1"', 'initial-scale=1, user-scalable=no"'))],
+  ['sitemap missing one URL', (dest) => edit(dest, 'sitemap.xml', (s) => s.replace(/\s*<url>\s*<loc>[^<]*en\/privacy\.html<\/loc>[\s\S]*?<\/url>/, ''))],
   ['robots.txt without the Sitemap line', (dest) => edit(dest, 'robots.txt', (s) => s.replace(/^Sitemap:.*$/m, ''))],
 ];
 
