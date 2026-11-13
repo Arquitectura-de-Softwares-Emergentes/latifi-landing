@@ -1090,7 +1090,8 @@ h2:focus {
   background: var(--color-text);
 }
 
-.phone-frame img {
+.phone-frame img,
+.phone-frame video {
   display: block;
   width: 100%;
   height: auto;
@@ -1670,6 +1671,308 @@ h2:focus {
   .step h3,
   .step p {
     grid-column: auto;
+  }
+}
+
+
+/* In action: three app clips on the navy band. Same scroll-snap row as the screens gallery. */
+.section-lead {
+  margin: calc(-1 * var(--space-md)) 0 var(--space-xl);
+  max-width: 65ch;
+}
+
+.reel {
+  overflow-x: auto;
+  padding: var(--space-sm) var(--space-sm) var(--space-lg);
+  margin-inline: calc(-1 * var(--space-sm));
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--space-sm);
+  scrollbar-color: var(--color-lime-400) rgb(255 255 255 / 0.16);
+  overscroll-behavior-x: contain;
+}
+
+.reel-track {
+  display: flex;
+  gap: var(--space-xl);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reel-item {
+  display: flex;
+  flex: 0 0 240px;
+  flex-direction: column;
+  align-items: stretch;
+  scroll-snap-align: start;
+}
+
+.reel-item .phone {
+  width: 100%;
+}
+
+.reel-item .phone-frame {
+  background: #05101f;
+  box-shadow: 0 24px 48px -16px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.14);
+}
+
+.reel-video {
+  background: #05101f;
+}
+
+.reel-item figcaption {
+  color: var(--color-on-navy-muted);
+  text-align: start;
+}
+
+.reel-item figcaption strong {
+  display: block;
+  font-family: var(--font-heading);
+  color: var(--color-white);
+}
+
+.reel-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  box-sizing: border-box;
+  min-height: var(--target-min);
+  margin-top: var(--space-md);
+  padding: 0 var(--space-lg);
+  border: 1.5px solid var(--color-lime-400);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-lime-400);
+  font-family: var(--font-body);
+  font-size: var(--text-label);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reel-toggle:hover {
+  background: rgb(198 255 61 / 0.14);
+}
+
+.reel-toggle .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.reel-item.is-playing .icon-play,
+.reel-item:not(.is-playing) .icon-pause {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .reel {
+    overflow: visible;
+    padding-inline: 0;
+    margin-inline: 0;
+  }
+  .reel-track {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-items: center;
+    gap: var(--space-2xl);
+  }
+  .reel-item {
+    flex: none;
+    width: min(100%, 280px);
+  }
+}
+
+/* Motion. Everything below runs only for visitors who did not ask for less motion.
+   Hover and focus effects use the individual transform properties (translate, scale, rotate)
+   so they never fight the scroll animations, which use transform. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise {
+    from { opacity: 0; translate: 0 28px; }
+    to { opacity: 1; translate: 0 0; }
+  }
+
+  @keyframes slide-in {
+    from { translate: 0 48px; }
+    to { translate: 0 0; }
+  }
+
+  @keyframes pop {
+    0% { scale: 0.6; opacity: 0; }
+    70% { scale: 1.12; opacity: 1; }
+    100% { scale: 1; opacity: 1; }
+  }
+
+  @keyframes fade-down {
+    from { opacity: 0; translate: 0 -8px; }
+    to { opacity: 1; translate: 0 0; }
+  }
+
+  /* Page load: the copy rises in, the phone slides up, the loan card pops. The headline and
+     the phone image are not faded, so the largest paint is not delayed. */
+  .hero-lead,
+  .hero-text > p,
+  .hero-actions,
+  .chips {
+    animation: rise 650ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .hero-text > p:nth-of-type(2) { animation-delay: 90ms; }
+  .hero-actions { animation-delay: 180ms; }
+  .chips { animation-delay: 300ms; }
+  .hero-visual .phone { animation: slide-in 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .hero-visual .card { animation: rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) 350ms both; }
+  .hero-visual .chip-paid { animation: pop 600ms cubic-bezier(0.3, 1.4, 0.5, 1) 1000ms both; }
+
+  /* Buttons, chips and links */
+  .btn,
+  .reel-toggle,
+  .back-to-top {
+    transition: color 150ms ease-out, background-color 150ms ease-out, translate 180ms ease-out,
+      scale 180ms ease-out, box-shadow 180ms ease-out;
+  }
+  .btn:hover,
+  .back-to-top:hover {
+    translate: 0 -2px;
+    box-shadow: var(--shadow-2);
+  }
+  .btn:active,
+  .reel-toggle:active {
+    translate: 0 0;
+    scale: 0.97;
+  }
+
+  .chip {
+    transition: translate 180ms ease-out, background-color 150ms ease-out;
+  }
+  .chips .chip:hover {
+    translate: 0 -2px;
+  }
+
+  .feature,
+  .security-item,
+  .verify-item,
+  .rule,
+  .cycle-step,
+  .step {
+    transition: translate 220ms ease-out, box-shadow 220ms ease-out;
+  }
+  .feature:hover,
+  .verify-item:hover {
+    translate: 0 -4px;
+    box-shadow: var(--shadow-2);
+  }
+  .security-item:hover,
+  .rule:hover,
+  .cycle-step:hover,
+  .step:hover {
+    translate: 0 -3px;
+  }
+
+  .icon-circle {
+    transition: scale 220ms cubic-bezier(0.3, 1.4, 0.5, 1), rotate 220ms ease-out,
+      background-color 150ms ease-out;
+  }
+  .feature:hover .icon-circle,
+  .security-item:hover .icon-circle,
+  .verify-item:hover .icon-circle,
+  .cycle-step:hover .icon-circle {
+    scale: 1.12;
+    rotate: -8deg;
+  }
+
+  .phone-frame {
+    transition: translate 260ms ease-out, rotate 260ms ease-out, box-shadow 260ms ease-out;
+  }
+  .gallery-item .phone:hover .phone-frame,
+  .reel-item .phone:hover .phone-frame {
+    translate: 0 -8px;
+    rotate: -1.5deg;
+  }
+
+  .verify-link .icon {
+    transition: translate 180ms ease-out;
+  }
+  .verify-link:hover .icon {
+    translate: 2px -2px;
+  }
+
+  .faq-item:hover summary {
+    background-color: var(--color-surface-alt);
+  }
+  .faq-item summary {
+    transition: background-color 150ms ease-out;
+  }
+  .faq-item[open] p {
+    animation: fade-down 260ms ease-out both;
+  }
+
+  /* Scroll-driven motion. Browsers without animation-timeline keep the static page. */
+  @supports (animation-timeline: view()) {
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes drift {
+      to { transform: translateY(-56px); }
+    }
+
+    @keyframes grow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    @keyframes settle {
+      from { opacity: 0; transform: translateY(40px) rotate(2deg) scale(0.94); }
+      to { opacity: 1; transform: none; }
+    }
+
+    /* Reading progress under the sticky header. */
+    .js .site-header::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-navy-700), var(--color-green-600), var(--color-lime-400));
+      transform-origin: 0 50%;
+      animation: grow linear both;
+      animation-timeline: scroll(root);
+    }
+
+    .section-title,
+    .section-lead,
+    .cycle-art,
+    .cycle-step,
+    .step,
+    .feature,
+    .security-item,
+    .verify-item,
+    .verify-intro p,
+    .trust-art,
+    .rep-intro p,
+    .rule,
+    .faq-item,
+    .flow,
+    .screens-intro p,
+    .download-column > p,
+    .download-column .card-dark {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+
+    .gallery-item,
+    .reel-item {
+      animation: settle linear both;
+      animation-timeline: view(inline);
+      animation-range: entry 0% entry 70%;
+    }
+
+    /* Hero phone drifts up a little while the page scrolls past it. */
+    .hero-visual .phone {
+      animation: slide-in 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both, drift linear both;
+      animation-timeline: auto, scroll(root);
+      animation-range: normal, 0 520px;
+    }
   }
 }
 

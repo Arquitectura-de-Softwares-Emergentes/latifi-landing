@@ -2,8 +2,8 @@
 // no string was left untranslated.
 // Usage: node scripts/check-i18n-parity.mjs [--self-test]
 //
-// Pairs checked when present: index.html with es/index.html, terms.html with es/terms.html,
-// privacy.html with es/privacy.html. One side of a pair without the other is a failure.
+// Pairs checked when present: en/index.html with index.html, en/terms.html with terms.html,
+// en/privacy.html with privacy.html (Spanish lives at the site root, English under en/). One side of a pair without the other is a failure.
 // For each pair:
 //   - the sequence of opening and closing tags is identical
 //   - the attribute names of every element are identical, in order (aria-current is left out:
@@ -26,14 +26,15 @@ import { fileURLToPath } from 'node:url';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const PAIRS = [
-  ['index.html', 'es/index.html'],
-  ['terms.html', 'es/terms.html'],
-  ['privacy.html', 'es/privacy.html'],
+  ['en/index.html', 'index.html'],
+  ['en/terms.html', 'terms.html'],
+  ['en/privacy.html', 'privacy.html'],
 ];
 
 // Section ids that differ between languages (the same map as ID_MAP in js/main.js).
 const ID_MAP = {
   'how-it-works': 'como-funciona',
+  'in-action': 'en-accion',
   benefits: 'beneficios',
   security: 'seguridad',
   download: 'descarga',
@@ -398,15 +399,15 @@ function selfTest() {
   const mutations = [
     {
       name: 'English sentence left in the Spanish page',
-      apply: edit('es/index.html', (text) => text.replace('Crea tu billetera.', 'Create your wallet.')),
+      apply: edit('index.html', (text) => text.replace('Crea tu billetera.', 'Create your wallet.')),
     },
     {
       name: 'list item removed from the Spanish page',
-      apply: edit('es/index.html', (text) => text.replace(/\s*<li class="step">[\s\S]*?<\/li>/, '')),
+      apply: edit('index.html', (text) => text.replace(/\s*<li class="step">[\s\S]*?<\/li>/, '')),
     },
     {
       name: 'dash added to the English page',
-      apply: edit('index.html', (text) => text.replace('Create your wallet.', 'Create your wallet – now.')),
+      apply: edit('en/index.html', (text) => text.replace('Create your wallet.', 'Create your wallet – now.')),
     },
   ];
 

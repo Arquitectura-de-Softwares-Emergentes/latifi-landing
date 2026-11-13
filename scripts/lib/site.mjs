@@ -24,15 +24,15 @@ export const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)
 // never reaches the staged copy.
 const ALLOWED_FILES = ['index.html', 'terms.html', 'privacy.html', 'robots.txt', 'sitemap.xml'];
 const ALLOWED_DIRS = ['css', 'js', 'img'];
-const ES_DIR = 'es';
+const EN_DIR = 'en';
 
 const REQUIRED_FILES = [
   'index.html',
-  'es/index.html',
+  'en/index.html',
   'terms.html',
   'privacy.html',
-  'es/terms.html',
-  'es/privacy.html',
+  'en/terms.html',
+  'en/privacy.html',
   'css/main.css',
   'js/main.js',
   'img/og-latifi.png',
@@ -42,11 +42,11 @@ const REQUIRED_FILES = [
 
 const PAGE_PATHS = [
   ['/', 'index.html'],
-  ['/es/', 'es/index.html'],
+  ['/en/', 'en/index.html'],
   ['/terms.html', 'terms.html'],
   ['/privacy.html', 'privacy.html'],
-  ['/es/terms.html', 'es/terms.html'],
-  ['/es/privacy.html', 'es/privacy.html'],
+  ['/en/terms.html', 'en/terms.html'],
+  ['/en/privacy.html', 'en/privacy.html'],
 ];
 
 const TEXT_EXTENSIONS = new Set(['.html', '.xml', '.txt']);
@@ -59,6 +59,7 @@ const CONTENT_TYPES = {
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
   '.webp': 'image/webp',
+  '.mp4': 'video/mp4',
   '.woff2': 'font/woff2',
   '.xml': 'application/xml; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8',
@@ -136,8 +137,8 @@ export function stage({ src, dest, baseUrl, strict = false }) {
       copyTree(path.join(from, dir), path.join(to, dir), () => true);
     }
   }
-  if (existsSync(path.join(from, ES_DIR))) {
-    copyTree(path.join(from, ES_DIR), path.join(to, ES_DIR), (name) => name.endsWith('.html'));
+  if (existsSync(path.join(from, EN_DIR))) {
+    copyTree(path.join(from, EN_DIR), path.join(to, EN_DIR), (name) => name.endsWith('.html'));
   }
 
   const files = listFiles(to);

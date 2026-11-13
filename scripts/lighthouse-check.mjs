@@ -2,7 +2,7 @@
 // Usage: node scripts/lighthouse-check.mjs [--live BASE_URL]
 //   default          audit a staged copy of the site served locally
 //   --live BASE_URL  skip staging and audit BASE_URL plus each page path (BASE_URL must be https)
-// Env:   MIN_SCORE (default 0.90), PAGES (comma separated page paths such as "/,/es/" to narrow
+// Env:   MIN_SCORE (default 0.90), PAGES (comma separated page paths such as "/,/en/" to narrow
 //        the run), LIGHTHOUSE_BIN, CHROME_PATH
 //
 // The staged copy is served under the same path prefix as the Pages site, with the site URL
