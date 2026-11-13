@@ -12,6 +12,9 @@ const ID_MAP = {
   benefits: 'beneficios',
   security: 'seguridad',
   download: 'descarga',
+  screens: 'pantallas',
+  reputation: 'reputacion',
+  verify: 'verifica',
   faq: 'faq',
   top: 'top',
 };

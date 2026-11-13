@@ -53,7 +53,7 @@ jobs:
           java -jar "${RUNNER_TEMP}/vnu.jar" --version
           find . -name '*.html' -not -path '*/node_modules/*' -not -path './.git/*' -print0 \
             | xargs -0 java -jar "${RUNNER_TEMP}/vnu.jar" --errors-only \
-                --filterpattern 'Attribute .loading. not allowed on element .iframe. at this point.|Bad value .allow-scripts allow-same-origin allow-presentation. for attribute .sandbox. on element .iframe.*'
+                --filterpattern 'Attribute .loading. not allowed on element .iframe. at this point.|Attribute .fetchpriority. not allowed on element .img. at this point.|Bad value .allow-scripts allow-same-origin allow-presentation. for attribute .sandbox. on element .iframe.*'
 
       - name: i18n and ARIA structure guard
         run: bash scripts/check-i18n-a11y.sh

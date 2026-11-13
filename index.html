@@ -65,13 +65,35 @@
     <section id="top" class="hero" tabindex="-1" aria-labelledby="hero-title">
       <div class="container hero-layout">
         <div class="hero-text">
-          <h1 id="hero-title">Microloans between people, with a reputation you can check</h1>
+          <h1 id="hero-title">Ask. Fund. Repay. Repeat.</h1>
+          <p class="hero-lead">Microloans between people, with a reputation you can check.</p>
           <p>Ask for a loan or fund one directly. LatiFi never holds your money or your keys, and every lender sees your payment history before deciding.</p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="#download">Get the app</a>
             <a class="btn btn-secondary" href="#how-it-works" data-segment="borrower">I'm a borrower</a>
             <a class="btn btn-secondary" href="#how-it-works" data-segment="lender">I'm a lender</a>
           </div>
+        </div>
+        <div class="hero-visual">
+          <figure class="phone">
+            <div class="phone-frame"><img src="img/app/home-en-640.webp" srcset="img/app/home-en-320.webp 320w, img/app/home-en-640.webp 640w" sizes="(min-width: 1024px) 260px, 240px" width="640" height="1436" alt="LatiFi home screen. It shows a balance of 1,000.00 tUSD, a Trusted reputation of 620, a next installment of 84.02 tUSD due November 21, and a Request a loan button." fetchpriority="high"></div>
+            <figcaption>Demo data on a test network</figcaption>
+          </figure>
+          <article class="card" aria-labelledby="card-title">
+            <h2 id="card-title" class="card-title">Example loan</h2>
+            <p class="card-note">Illustrative figures, not real data</p>
+            <dl class="card-fields">
+              <div><dt>Amount</dt><dd>100 digital test dollars</dd></div>
+              <div><dt>Term</dt><dd>90 days</dd></div>
+              <div><dt>Installments</dt><dd>3</dd></div>
+              <div><dt>Rate</dt><dd>12% a year, set by the borrower</dd></div>
+            </dl>
+            <div class="card-progress">
+              <label for="loan-progress">2 of 3 installments paid</label>
+              <progress id="loan-progress" value="2" max="3">2 of 3</progress>
+            </div>
+            <span class="chip chip-paid"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="img/icons.svg#check"></use></svg>Paid</span>
+          </article>
         </div>
         <ul class="chips" role="list">
           <li class="chip"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="img/icons.svg#shield"></use></svg>You keep your keys</li>
@@ -80,26 +102,36 @@
           <li class="chip"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="img/icons.svg#currency-exchange"></use></svg>Amounts also in soles</li>
         </ul>
         <p class="demo-notice">Academic demo on a test network. The money in the app has no real value.</p>
-        <article class="card" aria-labelledby="card-title">
-          <h2 id="card-title" class="card-title">Example loan</h2>
-          <p class="card-note">Illustrative figures, not real data</p>
-          <dl class="card-fields">
-            <div><dt>Amount</dt><dd>100 digital test dollars</dd></div>
-            <div><dt>Term</dt><dd>90 days</dd></div>
-            <div><dt>Installments</dt><dd>3</dd></div>
-            <div><dt>Rate</dt><dd>12% a year, set by the borrower</dd></div>
-          </dl>
-          <div class="card-progress">
-            <label for="loan-progress">2 of 3 installments paid</label>
-            <progress id="loan-progress" value="2" max="3">2 of 3</progress>
-          </div>
-          <span class="chip chip-paid"><svg class="icon" aria-hidden="true" focusable="false" width="16" height="16"><use href="img/icons.svg#check"></use></svg>Paid</span>
-        </article>
       </div>
     </section>
     <section id="how-it-works" class="section section-alt" aria-labelledby="how-title">
       <div class="container">
         <h2 id="how-title" class="section-title">How LatiFi works</h2>
+        <div class="cycle">
+          <img class="cycle-art" src="img/loop.svg" alt="" width="960" height="230" loading="lazy">
+          <ol class="cycle-list" role="list" aria-label="The four steps of a loan">
+            <li class="cycle-step">
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#request"></use></svg></span>
+              <h3>Ask.</h3>
+              <p>A borrower posts the amount, rate, term and number of installments.</p>
+            </li>
+            <li class="cycle-step">
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#coin"></use></svg></span>
+              <h3>Fund.</h3>
+              <p>A lender reads the request, checks the reputation and funds it.</p>
+            </li>
+            <li class="cycle-step">
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#repay"></use></svg></span>
+              <h3>Repay.</h3>
+              <p>The borrower pays in 1 to 6 installments, straight to the lender’s wallet.</p>
+            </li>
+            <li class="cycle-step">
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#reputation"></use></svg></span>
+              <h3>Build reputation.</h3>
+              <p>Each payment moves the score. The next lender sees it, and the loop starts again.</p>
+            </li>
+          </ol>
+        </div>
         <div class="tabs">
           <div role="tablist" class="tablist" aria-label="How LatiFi works" hidden>
             <button type="button" role="tab" id="tab-borrower" class="tab" aria-selected="true" aria-controls="panel-borrower" tabindex="0">For borrowers</button>
@@ -150,7 +182,38 @@
         </div>
       </div>
     </section>
-    <section id="benefits" class="section" aria-labelledby="benefits-title">
+    <section id="screens" class="section" aria-labelledby="screens-title">
+      <div class="container screens-layout">
+        <div class="screens-intro">
+          <h2 id="screens-title" class="section-title">See the app before you install it</h2>
+          <p>Three real screens from the Android build, captured in Demo mode. Every name, balance and loan on them is made up.</p>
+          <p class="demo-tag"><svg class="icon" aria-hidden="true" focusable="false" width="20" height="20"><use href="img/icons.svg#flask"></use></svg>Demo data. Amounts are fictional and live on a test network.</p>
+        </div>
+        <div class="gallery" role="region" aria-label="App screens. Scroll sideways to see more." tabindex="0">
+          <ul class="gallery-track" role="list">
+            <li class="gallery-item">
+              <figure class="phone">
+                <div class="phone-frame"><img src="img/app/loans-en-640.webp" srcset="img/app/loans-en-320.webp 320w, img/app/loans-en-640.webp 640w" sizes="220px" width="640" height="1436" alt="Loans screen with five loans listed. The status filters read All, Open, Pending, Paid and Overdue. The first loan is 120.00 tUSD and open, at 8% a year for 45 days, with 0 of 2 installments paid. The second is 250.00 tUSD and pending, with 1 of 3 installments paid." loading="lazy"></div>
+                <figcaption><strong>Your loans</strong> Each loan shows its amount, rate, term and paid installments, with a status you can read.</figcaption>
+              </figure>
+            </li>
+            <li class="gallery-item">
+              <figure class="phone">
+                <div class="phone-frame"><img src="img/app/reputation-en-640.webp" srcset="img/app/reputation-en-320.webp 320w, img/app/reputation-en-640.webp 640w" sizes="220px" width="640" height="1436" alt="Reputation screen. The score is 620 of 1000 with the Trusted level. Counters show 3 paid on time, 1 paid late and 0 defaulted. Below, a history filter and the first events, each with the points it added." loading="lazy"></div>
+                <figcaption><strong>Your reputation</strong> A score out of 1000, a count of on-time and late payments, and the history behind it.</figcaption>
+              </figure>
+            </li>
+            <li class="gallery-item">
+              <figure class="phone">
+                <div class="phone-frame"><img src="img/app/profile-en-640.webp" srcset="img/app/profile-en-320.webp 320w, img/app/profile-en-640.webp 640w" sizes="220px" width="640" height="1436" alt="Profile screen. It lists the shortened wallet address, with options to copy it, get test coins and disconnect the wallet. Under Preferences it shows the role, a language choice and the local currency." loading="lazy"></div>
+                <figcaption><strong>Your profile</strong> Your wallet address, your role, the language and your local currency.</figcaption>
+              </figure>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section id="benefits" class="section section-alt" aria-labelledby="benefits-title">
       <div class="container">
         <h2 id="benefits-title" class="section-title">Clear terms from the first screen</h2>
         <div class="features">
@@ -186,6 +249,21 @@
         </figure>
       </div>
     </section>
+    <section id="reputation" class="section" aria-labelledby="reputation-title">
+      <div class="container rep-layout">
+        <div class="rep-intro">
+          <h2 id="reputation-title" class="section-title">Reputation with rules you can read</h2>
+          <p>The score runs from 0 to 1000 and follows a fixed policy, not a guess.</p>
+        </div>
+        <dl class="rules">
+              <div class="rule"><dt>0 to 1000</dt><dd>score range</dd></div>
+              <div class="rule"><dt>+20</dt><dd>points for each installment paid on time</dd></div>
+              <div class="rule"><dt>−5</dt><dd>points for each day an installment is late</dd></div>
+              <div class="rule"><dt>−200</dt><dd>points when a loan defaults</dd></div>
+              <div class="rule"><dt>1 to 6</dt><dd>installments you can choose for one loan</dd></div>
+        </dl>
+      </div>
+    </section>
     <section id="security" class="section section-dark on-dark" aria-labelledby="security-title">
       <div class="container">
         <div class="security-layout">
@@ -197,7 +275,7 @@
               <p>Your private keys stay on your phone, protected by the device. LatiFi cannot move your money.</p>
             </article>
             <article class="security-item">
-              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#gavel"></use></svg></span>
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#contract"></use></svg></span>
               <h3>Rules that run on their own.</h3>
               <p>The amount, rate and installments are written in a contract on the Polygon Amoy test network. Nobody can change them once the loan is funded.</p>
             </article>
@@ -207,12 +285,58 @@
               <p>Your level comes from payments recorded by the contract and from your profile, not from a promise.</p>
             </article>
             <article class="security-item">
-              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#science"></use></svg></span>
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#flask"></use></svg></span>
               <h3>Test network only.</h3>
               <p>This is an academic demonstration. The money in the app is a test token with no real value.</p>
             </article>
           </div>
         </div>
+        <figure class="flow">
+          <img src="img/flow.svg" alt="Diagram of the money path. A lender wallet on the left sends funds to a loan contract in the center, and the contract sends them to the borrower wallet on the right. Repayments travel back the same way. A dashed LatiFi badge floats above the contract with a cross under it, which shows that LatiFi is not on the path." width="960" height="370" loading="lazy">
+          <figcaption>How the money moves: wallet to contract to wallet. LatiFi is not in the middle.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section id="verify" class="section section-alt" aria-labelledby="verify-title">
+      <div class="container verify-layout">
+        <div class="verify-intro">
+          <h2 id="verify-title" class="section-title">Check it yourself</h2>
+          <p>You do not have to take our word for anything on this page. The contract, the API and the code are public.</p>
+          <img class="trust-art" src="img/trust.svg" alt="" width="360" height="280" loading="lazy">
+        </div>
+        <ul class="verify-list" role="list">
+            <li class="verify-item">
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#contract"></use></svg></span>
+              <div class="verify-body">
+                <h3>The loan contract</h3>
+                <p>LoanBook runs on Polygon Amoy. Read its code and every transaction on the block explorer.</p>
+                <p class="verify-address"><code>0xccb8ad15a4954138c987a77924ceab468a843266</code></p>
+                <a class="verify-link" href="https://amoy.polygonscan.com/address/0xccb8ad15a4954138c987a77924ceab468a843266">View on Polygonscan<svg class="icon" aria-hidden="true" focusable="false" width="20" height="20"><use href="img/icons.svg#external"></use></svg></a>
+              </div>
+            </li>
+            <li class="verify-item">
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#terminal"></use></svg></span>
+              <div class="verify-body">
+                <h3>The live API</h3>
+                <p>Browse every endpoint of the LatiFi API, with its parameters and responses.</p>
+                <a class="verify-link" href="https://latifi-api.juan-tech.com/swagger-ui.html">Open the API documentation<svg class="icon" aria-hidden="true" focusable="false" width="20" height="20"><use href="img/icons.svg#external"></use></svg></a>
+              </div>
+            </li>
+            <li class="verify-item">
+              <span class="icon-circle"><svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#code"></use></svg></span>
+              <div class="verify-body">
+                <h3>The source code</h3>
+                <p>Five public repositories hold the contracts, the API, the Android app, this site and the report.</p>
+                <ul class="repo-links" role="list">
+                  <li><a class="verify-link" href="https://github.com/Arquitectura-de-Softwares-Emergentes/latifi-contracts">latifi-contracts<svg class="icon" aria-hidden="true" focusable="false" width="20" height="20"><use href="img/icons.svg#external"></use></svg></a></li>
+                  <li><a class="verify-link" href="https://github.com/Arquitectura-de-Softwares-Emergentes/latifi-api">latifi-api<svg class="icon" aria-hidden="true" focusable="false" width="20" height="20"><use href="img/icons.svg#external"></use></svg></a></li>
+                  <li><a class="verify-link" href="https://github.com/Arquitectura-de-Softwares-Emergentes/latifi-android">latifi-android<svg class="icon" aria-hidden="true" focusable="false" width="20" height="20"><use href="img/icons.svg#external"></use></svg></a></li>
+                  <li><a class="verify-link" href="https://github.com/Arquitectura-de-Softwares-Emergentes/latifi-landing">latifi-landing<svg class="icon" aria-hidden="true" focusable="false" width="20" height="20"><use href="img/icons.svg#external"></use></svg></a></li>
+                  <li><a class="verify-link" href="https://github.com/Arquitectura-de-Softwares-Emergentes/latifi-report">latifi-report<svg class="icon" aria-hidden="true" focusable="false" width="20" height="20"><use href="img/icons.svg#external"></use></svg></a></li>
+                </ul>
+              </div>
+            </li>
+        </ul>
       </div>
     </section>
     <section id="faq" class="section" aria-labelledby="faq-title">
@@ -264,6 +388,13 @@
         <div class="download-column">
           <h2 id="download-title" tabindex="-1">Get the app</h2>
           <p>LatiFi Wallet runs on Android. Download the test build and create your wallet in a few minutes.</p>
+          <div class="notice" role="note">
+            <svg class="icon" aria-hidden="true" focusable="false" width="24" height="24"><use href="img/icons.svg#alert"></use></svg>
+            <div>
+              <p class="notice-title">Read this first</p>
+              <p>This is a demo on a test network. The money has no real value, and the app only runs on Android.</p>
+            </div>
+          </div>
           <div class="card-dark on-dark">
             <a class="btn btn-primary-dark" href="#download" data-placeholder="true">Download for Android</a>
             <p class="status">The download link goes live with the first release.</p>

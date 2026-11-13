@@ -37,6 +37,9 @@ const ID_MAP = {
   benefits: 'beneficios',
   security: 'seguridad',
   download: 'descarga',
+  screens: 'pantallas',
+  reputation: 'reputacion',
+  verify: 'verifica',
 };
 
 // Strings that read the same in both languages.
@@ -55,6 +58,15 @@ const ALLOWLIST = new Set([
   'Inter',
   'SIL OFL 1.1',
   'latifi.lang',
+  'GitHub',
+  'LoanBook',
+  'Polygonscan',
+  'latifi-contracts',
+  'latifi-api',
+  'latifi-android',
+  'latifi-landing',
+  'latifi-report',
+  '0xccb8ad15a4954138c987a77924ceab468a843266',
 ]);
 
 // Attributes whose value is read by people, on any element.

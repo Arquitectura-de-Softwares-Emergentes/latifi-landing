@@ -38,6 +38,10 @@ node scripts/lighthouse-check.mjs          # Accessibility and SEO of six pages,
 
 The Nu HTML Checker and lychee (link and fragment check) run only in CI. The release flow and the branch rules are in [CONTRIBUTING.md](CONTRIBUTING.md). The accessibility evidence is in [docs/A11Y-REPORT.md](docs/A11Y-REPORT.md).
 
+## Images
+
+App screenshots live in `img/app/` as WebP at 320 and 640 px wide, one set per language (`-en` and `-es`). To refresh one, export the PNG at the same aspect ratio and run `cwebp -q 78 -m 6 -sharp_yuv -resize 640 1436 in.png -o img/app/NAME-LANG-640.webp`, then repeat at 320 by 718. The illustrations `loop.svg`, `flow.svg` and `trust.svg` and the icon sprite `icons.svg` are plain SVG and carry no text, so both languages share them.
+
 ## Deploy
 
 A push to `main` (a release merge) runs `.github/workflows/pages.yml`. It stages the allowlisted files in strict mode, so the job fails when an expected file is missing, and publishes them to GitHub Pages over HTTPS. Pull requests never deploy.

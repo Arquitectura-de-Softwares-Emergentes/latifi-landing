@@ -98,6 +98,16 @@ The 8 missing SEO points come from one audit, `robots-txt`. Lighthouse fetches `
 
 Guards that run before the browser: `scripts/check-i18n-a11y.sh` (language attribute, skip link, single `main`, title and hreflang on every HTML file), `scripts/check-i18n-parity.mjs` (the Spanish pages mirror the English structure) and `scripts/check-csp.sh` (CSP and no inline styles or handlers).
 
+## Visual additions
+
+The home pages carry app screenshots, three flat illustrations and an authored icon set. Rules that keep them accessible:
+
+- Every screenshot has a text alternative that describes the screen in the page language. The Spanish page uses only the Spanish captures. Decorative art (`loop.svg`, `trust.svg`) has an empty `alt`. The money path diagram (`flow.svg`) has a full description plus a caption.
+- Phone frames are drawn in CSS. Images carry `width` and `height`, so nothing shifts while they load.
+- The screen gallery is a labelled `region` that takes keyboard focus, so the arrow keys scroll it. It uses scroll-snap, has no autoplay and shows all screens side by side from 1024 px. `scripts/ui-check.mjs` exempts that one region from the clipping and overflow measurements, because horizontal scrolling inside it is the intended behavior.
+- Icons share one 2 px rounded stroke on a 24 px grid and are `aria-hidden` next to a visible label.
+- Reputation numbers (0 to 1000, +20, -5, -200, 1 to 6) come from the scoring policy. The page states no user counts, amounts or rates.
+
 ## Criteria map
 
 | SC | Criterion | Mechanism | Check that proves it |
