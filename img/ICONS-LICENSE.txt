@@ -1,44 +1,6 @@
-Material Symbols Rounded icons used by img/icons.svg
+Icons in img/icons.svg
 
-Copyright Google LLC
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use these files except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-Source repository: https://github.com/google/material-design-icons
-Source commit:     10ecc14790612ca8fd164e3f4ffe9c16fc50d5b7
-Source path:       symbols/web/<name>/materialsymbolsrounded/<name>_24px.svg
-Repository LICENSE sha256: 58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd
-
-Changes made: the 16 files were fetched at the commit above and their path data
-and viewBox were copied unchanged into one <symbol> each. The width, height and
-xmlns attributes of each source file were dropped. Nothing else was altered.
-
-Icons (source name, then symbol id in img/icons.svg):
-  menu               menu
-  close              close
-  arrow_upward       arrow-up
-  expand_more        chevron-down
-  check              check
-  shield             shield
-  visibility         visibility
-  description        description
-  currency_exchange  currency-exchange
-  star               star
-  lock_open          lock-open
-  chat_bubble        chat-bubble
-  key                key
-  gavel              gavel
-  verified           verified
-  science            science
-
-Substitutions: none. Every name exists at the pinned commit.
+Original artwork drawn for the LatiFi landing page on a 24 px grid with a 2 px
+rounded stroke. The stroke width, line caps and joins come from the .icon rule
+in css/main.css, so every symbol carries geometry only. The artwork is
+released under the same terms as the rest of this repository.

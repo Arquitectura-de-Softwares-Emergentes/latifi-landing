@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -70 960 370" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke-width="4">
+    <!-- lender wallet -->
+    <g stroke="#0B1F3A">
+      <rect x="30" y="100" width="200" height="130" rx="24" fill="#E8EEF7"/>
+      <path d="M72 148h116a10 10 0 0 1 10 10v36a10 10 0 0 1-10 10H88a16 16 0 0 1-16-16z" fill="#fff"/>
+      <path d="M72 164v-12a16 16 0 0 1 16-16h80"/>
+      <circle cx="170" cy="176" r="8" fill="#C6FF3D"/>
+    </g>
+    <!-- contract -->
+    <g stroke="#0B1F3A">
+      <rect x="370" y="60" width="220" height="210" rx="28" fill="#C6FF3D"/>
+      <rect x="430" y="92" width="100" height="130" rx="12" fill="#fff"/>
+      <path d="M448 120h64M448 142h64M448 164h30"/>
+      <circle cx="504" cy="196" r="14" fill="#C6FF3D"/>
+      <path d="M498 196l5 5 9-10"/>
+    </g>
+    <!-- borrower wallet -->
+    <g stroke="#0B1F3A">
+      <rect x="730" y="100" width="200" height="130" rx="24" fill="#E8EEF7"/>
+      <path d="M772 148h116a10 10 0 0 1 10 10v36a10 10 0 0 1-10 10H788a16 16 0 0 1-16-16z" fill="#fff"/>
+      <path d="M772 164v-12a16 16 0 0 1 16-16h80"/>
+      <circle cx="870" cy="176" r="8" fill="#C6FF3D"/>
+    </g>
+    <!-- funding and repayment arrows, wallet to contract to wallet -->
+    <g stroke="#C6FF3D">
+      <path d="M240 150h120M346 136l14 14-14 14"/>
+      <path d="M600 150h120M706 136l14 14-14 14"/>
+    </g>
+    <g stroke="#FFFFFF" stroke-dasharray="3 12">
+      <path d="M720 206H600M614 192l-14 14 14 14"/>
+      <path d="M360 206H240M254 192l-14 14 14 14"/>
+    </g>
+    <!-- LatiFi stays outside the money path -->
+    <g stroke="#FFFFFF">
+      <rect x="390" y="-60" width="180" height="50" rx="25" stroke-dasharray="10 10"/>
+      <circle cx="440" cy="-35" r="9" fill="#C6FF3D" stroke="#C6FF3D"/>
+      <path d="M464 -35h66"/>
+      <path d="M472 18l16 16M488 18l-16 16"/>
+    </g>
+  </g>
+</svg>
