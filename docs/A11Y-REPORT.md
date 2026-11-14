@@ -7,7 +7,7 @@ Evidence record for the LatiFi landing page against WCAG 2.1 AA. Every automated
 - Standard: WCAG 2.1 AA, applied through the project rules in A11Y.md.
 - Pages: six. The home page, the terms and conditions and the privacy policy, each in Spanish at the site root and in English (`index.html`, `terms.html`, `privacy.html` and their `en/` counterparts).
 - Theme: light only. Dark mode stays an app feature.
-- Not in scope: the Android app, which has its own accessibility work, and the product video, which is off until a captioned video exists.
+- Not in scope: the Android app, which has its own accessibility work, and the YouTube player itself, whose controls and captions belong to YouTube.
 
 ## Contrast
 
@@ -75,7 +75,7 @@ The 8 missing SEO points come from one audit, `robots-txt`. Lighthouse fetches `
 | `tabs-distinct-content` | Both tab panels have three distinct steps |
 | `no-js-panels` | Tab panels stay readable without scripts |
 | `console-clean` | No console errors and no CSP violations on any page |
-| `video-slot-hidden` | The video slot is hidden, inert and makes no request |
+| `video-embed` | The product video is visible with a title, a lazy `youtube-nocookie.com` frame that makes no request until it nears the viewport, a matching CSP `frame-src` and a full transcript in both languages |
 | `video-error-offline` | A failing video shows the error line and the transcript link |
 | `faq-native` | The FAQ has seven native `details` items and keyboard behavior comes from the browser |
 | `counts` | Section, step, card and question counts match the design contract |

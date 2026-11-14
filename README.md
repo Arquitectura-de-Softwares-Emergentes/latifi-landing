@@ -59,16 +59,11 @@ To switch it on, make two edits in each of `index.html` and `en/index.html`, in 
 
 Run `node scripts/ui-check.mjs` afterwards. If the new URL leaves the site, check the CSP: a plain link needs no change, because `default-src 'none'` does not restrict navigation.
 
-## Enable the product video
+## Product video
 
-The video slot ships hidden and inert. It makes no request and takes no space. To enable it, do this on both home pages, with a video that has captions:
+The "About the product" video is a YouTube embed (`https://www.youtube-nocookie.com/embed/e3YCgq88J7c`) in the slot with `id="video-slot"` on both home pages. The frame stays empty until the visitor scrolls within 200 px of it, then `js/main.js` copies `data-src` to `src`. The CSP carries `frame-src https://www.youtube-nocookie.com`, and the full transcript sits under the player.
 
-1. Set the `data-src` attribute of the slot iframe to an `https` URL. Other schemes are ignored.
-2. Remove the `hidden` attribute from the `figure` with `id="video-slot"` and from the `div` with `id="video-transcript"`.
-3. Write the transcript inside the `video-transcript` block, and make sure the video has captions.
-4. Add the video origin to the CSP meta tag of both pages as a `frame-src` directive, for example `frame-src https://www.youtube-nocookie.com`. Without it the browser blocks the frame, and the page shows the error line and the transcript link.
-5. Run `bash scripts/check-csp.sh`, `node scripts/ui-check.mjs` and `node scripts/check-i18n-parity.mjs`.
-6. Update the privacy pages if the video host changes what the visitor shares. They already name the video frame as the only optional external request.
+To change the video, edit the `data-src` attribute and the transcript on both pages, then run `bash scripts/check-csp.sh`, `node scripts/ui-check.mjs` and `node scripts/check-i18n-parity.mjs`. If the host changes, update the CSP `frame-src` and both privacy pages too.
 
 ## Change the site URL
 
