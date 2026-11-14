@@ -1227,6 +1227,10 @@ h2:focus {
   margin: 0;
 }
 
+.pricing-features {
+  margin-top: var(--space-xl);
+}
+
 .rule {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

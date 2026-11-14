@@ -10,6 +10,7 @@ const LANG_KEY = 'latifi.lang';
 const ID_MAP = {
   'how-it-works': 'como-funciona',
   benefits: 'beneficios',
+  costs: 'costos',
   security: 'seguridad',
   download: 'descarga',
   'in-action': 'en-accion',
