@@ -2,7 +2,7 @@
 <html lang="es-419">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-qOhFsq0QMV2REqNwk5hGH5bZE9SkX6gt6yeyKdYPv+U=' 'sha256-wIiTFXRmqXBa5PfmIYiY/uE4oiXqe99NPkskdLjHdmk='; style-src 'self'; img-src 'self'; font-src 'self'; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-qOhFsq0QMV2REqNwk5hGH5bZE9SkX6gt6yeyKdYPv+U=' 'sha256-wIiTFXRmqXBa5PfmIYiY/uE4oiXqe99NPkskdLjHdmk='; style-src 'self'; img-src 'self'; font-src 'self'; media-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LatiFi: microcréditos P2P con reputación verificable</title>
   <meta name="description" content="LatiFi conecta a prestatarios y prestamistas con microcréditos P2P sobre blockchain. No custodia tu dinero y muestra la reputación de cada solicitante.">
@@ -266,12 +266,23 @@
             <p>Palabras como cuota y comisión de red, sin jerga técnica.</p>
           </article>
         </div>
-        <figure id="video-slot" class="video-slot" hidden>
+        <figure id="video-slot" class="video-slot">
           <h3>Sobre el producto</h3>
           <div class="video-frame">
-            <iframe title="Video de presentación del producto LatiFi" loading="lazy" data-src="" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen></iframe>
+            <iframe title="Video de presentación del producto LatiFi" loading="lazy" data-src="https://www.youtube-nocookie.com/embed/e3YCgq88J7c" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen></iframe>
           </div>
-          <div id="video-transcript" tabindex="-1" hidden></div>
+          <div id="video-transcript" class="video-transcript-text" tabindex="-1">
+            <h4>Transcripción del video</h4>
+            <p>El video está narrado en español. Este texto reproduce lo que dice la narración.</p>
+            <p>¿Y si pedir un préstamo fuera tan simple como pedírselo a alguien que confía en ti? Esto es LatiFi.</p>
+            <p>LatiFi conecta a personas que necesitan un microcrédito con personas que quieren prestar. Tú pides, otra persona fondea, y el dinero va directo de una billetera a otra. LatiFi nunca toca tu dinero ni tus llaves.</p>
+            <p>Primero, pides. Eliges el monto, la tasa, el plazo y de una a seis cuotas. Después, un prestamista lee tu solicitud, revisa tu reputación y la fondea. Luego pagas cada cuota directo a su billetera. Y cada pago construye tu reputación: el siguiente prestamista la ve, y el ciclo empieza otra vez.</p>
+            <p>Todo ocurre en una app para Android. Ves tu saldo, tu próxima cuota y tu reputación en una sola pantalla. Cada monto aparece en dólares digitales y también en soles, para que sepas exactamente a qué te comprometes.</p>
+            <p>La reputación va de cero a mil y sigue reglas fijas. Sumas veinte puntos por cada cuota a tiempo, pierdes cinco por cada día de atraso y doscientos si un préstamo cae en incumplimiento. No hay garantías bloqueadas: tu historial ocupa ese lugar.</p>
+            <p>Tus llaves se quedan en tu teléfono. Las reglas del préstamo están escritas en un contrato inteligente, y el dinero viaja de billetera a contrato y de contrato a billetera. LatiFi no está en el camino.</p>
+            <p>No tienes que creernos. El contrato, la documentación de la API y el código son públicos, y puedes revisarlos tú mismo.</p>
+            <p>LatiFi. Pide. Fondea. Paga. Repite. Descarga la app para Android.</p>
+          </div>
           <p class="video-error" hidden>No se pudo cargar el video. Lee la transcripción.</p>
           <a class="video-transcript" href="#video-transcript">Leer la transcripción</a>
         </figure>

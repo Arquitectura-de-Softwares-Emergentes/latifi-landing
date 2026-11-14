@@ -704,27 +704,35 @@ function makeScenarios(base, siteDir) {
     assert(failed.length === 0, `failed requests: ${failed.join(' | ')}`);
   });
 
-  scenario('video-slot-hidden', async (t) => {
+  scenario('video-embed', async (t) => {
     for (const lang of LANGS) {
       await t.open(base + lang.path);
       const state = await t.evaluate(`(() => {
         const slot = document.getElementById('video-slot');
         const frame = slot.querySelector('iframe');
         const r = slot.getBoundingClientRect();
-        return { hidden: slot.hasAttribute('hidden'), height: r.height, width: r.width,
+        const csp = document.querySelector('meta[http-equiv="Content-Security-Policy"]').content;
+        return { hidden: slot.hasAttribute('hidden'), height: r.height,
           loading: frame.getAttribute('loading'), src: frame.getAttribute('src'),
-          dataSrc: frame.getAttribute('data-src'), frameCount: document.querySelectorAll('iframe').length,
-          error: slot.querySelector('.video-error').hidden };
+          dataSrc: frame.getAttribute('data-src'), title: frame.getAttribute('title'),
+          frameCount: document.querySelectorAll('iframe').length,
+          error: slot.querySelector('.video-error').hidden,
+          transcript: document.getElementById('video-transcript').textContent.trim().length,
+          transcriptHidden: document.getElementById('video-transcript').hidden,
+          frameSrc: (csp.match(/frame-src ([^;]*)/) || [])[1] };
       })()`);
-      assert(state.hidden, `${lang.code}: the video slot has no hidden attribute`);
-      assert(state.height === 0 && state.width === 0, `${lang.code}: the hidden slot takes space (${state.width} by ${state.height})`);
+      assert(!state.hidden && state.height > 0, `${lang.code}: the video slot is hidden or has no height`);
       assert(state.loading === 'lazy', `${lang.code}: iframe loading is ${state.loading}`);
-      assert(state.src === null && state.dataSrc === '', `${lang.code}: iframe src ${state.src}, data-src "${state.dataSrc}"`);
+      assert(state.dataSrc === 'https://www.youtube-nocookie.com/embed/e3YCgq88J7c', `${lang.code}: data-src is "${state.dataSrc}"`);
+      assert(state.src === null, `${lang.code}: the iframe loads before it nears the viewport (${state.src})`);
+      assert(state.title && state.title.length > 5, `${lang.code}: the iframe has no title`);
       assert(state.frameCount === 1 && state.error, `${lang.code}: unexpected iframe count or visible error line`);
+      assert(state.transcript > 400 && !state.transcriptHidden, `${lang.code}: the transcript is missing or hidden`);
+      assert(state.frameSrc === 'https://www.youtube-nocookie.com', `${lang.code}: CSP frame-src is "${state.frameSrc}"`);
     }
     const origin = new URL(base).origin;
     const outside = t.requestedUrls().filter((url) => !/^(about|data):/.test(url) && new URL(url).origin !== origin);
-    assert(outside.length === 0, `requests outside ${origin}: ${outside.join(', ')}`);
+    assert(outside.length === 0, `requests outside ${origin} before scrolling: ${outside.join(', ')}`);
   });
 
   scenario('video-error-offline', async (t) => {

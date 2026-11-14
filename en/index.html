@@ -2,7 +2,7 @@
 <html lang="en-US">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-qOhFsq0QMV2REqNwk5hGH5bZE9SkX6gt6yeyKdYPv+U=' 'sha256-zShWtVkRckG5iK1T1MUmR6dU9m/9wnp57921F84KRxk='; style-src 'self'; img-src 'self'; font-src 'self'; media-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-qOhFsq0QMV2REqNwk5hGH5bZE9SkX6gt6yeyKdYPv+U=' 'sha256-zShWtVkRckG5iK1T1MUmR6dU9m/9wnp57921F84KRxk='; style-src 'self'; img-src 'self'; font-src 'self'; media-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LatiFi: P2P microloans with verifiable reputation</title>
   <meta name="description" content="LatiFi connects borrowers and lenders through blockchain-based P2P microloans. It never holds your funds and shows each applicant's reputation.">
@@ -266,12 +266,23 @@
             <p>Words like installment and network fee, not technical jargon.</p>
           </article>
         </div>
-        <figure id="video-slot" class="video-slot" hidden>
+        <figure id="video-slot" class="video-slot">
           <h3>About the product</h3>
           <div class="video-frame">
-            <iframe title="LatiFi product overview video" loading="lazy" data-src="" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen></iframe>
+            <iframe title="LatiFi product overview video" loading="lazy" data-src="https://www.youtube-nocookie.com/embed/e3YCgq88J7c" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen></iframe>
           </div>
-          <div id="video-transcript" tabindex="-1" hidden></div>
+          <div id="video-transcript" class="video-transcript-text" tabindex="-1">
+            <h4>Video transcript</h4>
+            <p>The video is narrated in Spanish. This is an English translation of what the narrator says.</p>
+            <p>What if asking for a loan were as simple as asking someone who trusts you? This is LatiFi.</p>
+            <p>LatiFi connects people who need a microloan with people who want to lend. You ask, someone funds it, and the money goes straight from one wallet to another. LatiFi never touches your money or your keys.</p>
+            <p>First, you ask. You choose the amount, the rate, the term, and one to six installments. Then a lender reads your request, checks your reputation, and funds it. You repay each installment straight to their wallet. And every payment builds your reputation: the next lender sees it, and the loop starts again.</p>
+            <p>It all happens in an Android app. You see your balance, your next installment, and your reputation on one screen. Every amount shows in digital dollars and in soles, so you know exactly what you agree to.</p>
+            <p>Reputation runs from zero to one thousand and follows fixed rules. You earn twenty points for every on-time installment, lose five for every late day, and lose two hundred if a loan defaults. There is no locked collateral: your track record takes its place.</p>
+            <p>Your keys stay on your phone. The loan rules are written in a smart contract, and the money travels from wallet to contract and from contract to wallet. LatiFi is not in the middle.</p>
+            <p>You do not have to take our word for it. The contract, the API documentation, and the code are public, and you can review them yourself.</p>
+            <p>LatiFi. Ask. Fund. Repay. Repeat. Get the Android app.</p>
+          </div>
           <p class="video-error" hidden>The video could not load. Read the transcript instead.</p>
           <a class="video-transcript" href="#video-transcript">Read the transcript</a>
         </figure>
