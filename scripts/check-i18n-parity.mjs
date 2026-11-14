@@ -36,6 +36,7 @@ const ID_MAP = {
   'how-it-works': 'como-funciona',
   'in-action': 'en-accion',
   benefits: 'beneficios',
+  costs: 'costos',
   security: 'seguridad',
   download: 'descarga',
   screens: 'pantallas',

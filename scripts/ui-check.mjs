@@ -781,20 +781,20 @@ function makeScenarios(base, siteDir) {
         titles: [...document.querySelectorAll('#faq .faq-group > h3')].length,
         open: document.querySelectorAll('#faq details[open]').length,
       })`);
-      assert(shape.items === 7, `${lang.code}: ${shape.items} FAQ items`);
-      assert(shape.groups.join() === '3,2,2' && shape.titles === 3, `${lang.code}: FAQ groups are ${shape.groups.join('/')} with ${shape.titles} titles`);
+      assert(shape.items === 8, `${lang.code}: ${shape.items} FAQ items`);
+      assert(shape.groups.join() === '4,2,2' && shape.titles === 3, `${lang.code}: FAQ groups are ${shape.groups.join('/')} with ${shape.titles} titles`);
       assert(shape.open === 0, `${lang.code}: ${shape.open} FAQ items are open on load`);
 
       const openState = () => t.evaluate("[...document.querySelectorAll('#faq details')].map((d) => d.open ? 1 : 0).join('')");
       await t.evaluate("document.querySelectorAll('#faq summary')[0].focus()");
       await t.press('Space');
-      assert((await openState()) === '1000000', `${lang.code}: Space on the first summary left ${await openState()}`);
+      assert((await openState()) === '10000000', `${lang.code}: Space on the first summary left ${await openState()}`);
       await t.evaluate("document.querySelectorAll('#faq summary')[4].focus()");
       await t.press('Enter');
-      assert((await openState()) === '1000100', `${lang.code}: Enter on the fifth summary left ${await openState()}`);
+      assert((await openState()) === '10001000', `${lang.code}: Enter on the fifth summary left ${await openState()}`);
       await t.evaluate("document.querySelectorAll('#faq summary')[0].focus()");
       await t.press('Space');
-      assert((await openState()) === '0000100', `${lang.code}: closing the first item changed the others (${await openState()})`);
+      assert((await openState()) === '00001000', `${lang.code}: closing the first item changed the others (${await openState()})`);
     }
   });
 
@@ -807,7 +807,7 @@ function makeScenarios(base, siteDir) {
         security: document.querySelectorAll('article.security-item').length,
         faq: document.querySelectorAll('details.faq-item').length,
       })`);
-      const want = { steps: 6, features: 4, security: 4, faq: 7 };
+      const want = { steps: 6, features: 8, security: 4, faq: 8 };
       for (const key of Object.keys(want)) {
         assert(counts[key] === want[key], `${lang.code}: ${key} is ${counts[key]}, expected ${want[key]}`);
       }
@@ -965,7 +965,7 @@ function makeScenarios(base, siteDir) {
       assert(state.expanded === 'true' && state.label === lang.menuClose, `${lang.code}: open state is ${state.expanded} "${state.label}"`);
       assert(state.panelDisplay !== 'none' && state.panelHeight > 0 && state.open && !state.panelHidden, `${lang.code}: the open panel is not shown`);
       const linkCount = await t.evaluate("document.querySelectorAll('#site-nav .main-nav a').length");
-      assert(linkCount === 5, `${lang.code}: ${linkCount} Main nav links, expected 5`);
+      assert(linkCount === 6, `${lang.code}: ${linkCount} Main nav links, expected 6`);
 
       // Escape closes the panel and returns focus to the button.
       await t.evaluate("document.querySelector('#site-nav .main-nav a').focus()");
@@ -1038,7 +1038,7 @@ function makeScenarios(base, siteDir) {
         })()`);
         const where = `${lang.code} at ${width}px`;
         assert(!fit.overflow, `${where}: horizontal scroll`);
-        assert(fit.rowCount === 7, `${where}: ${fit.rowCount} header links, expected 5 Main nav and 2 language`);
+        assert(fit.rowCount === 8, `${where}: ${fit.rowCount} header links, expected 6 Main nav and 2 language`);
         assert(fit.spread <= 2, `${where}: the nav and language links are ${fit.spread.toFixed(1)}px apart vertically, not on one row`);
         assert(fit.overlaps.length === 0, `${where}: header items overlap: ${fit.overlaps.join(', ')}`);
         assert(fit.right <= fit.inner, `${where}: header content ends at ${fit.right}, beyond ${fit.inner}`);
@@ -1065,7 +1065,7 @@ function makeScenarios(base, siteDir) {
         };
       })()`);
       assert(!state.jsClass, `${lang.code}: the js class is set with scripts disabled`);
-      assert(state.total === 7 && state.visible === 7, `${lang.code}: ${state.visible} of ${state.total} nav links visible without scripts`);
+      assert(state.total === 8 && state.visible === 8, `${lang.code}: ${state.visible} of ${state.total} nav links visible without scripts`);
       assert(state.button === 'none', `${lang.code}: the menu button is displayed without scripts (${state.button})`);
       assert(!state.overflow, `${lang.code}: horizontal overflow at 390px without scripts`);
       assert(state.position !== 'sticky', `${lang.code}: the tall no-script header is sticky`);
@@ -1164,11 +1164,11 @@ function makeScenarios(base, siteDir) {
     for (const lang of LANGS) {
       await t.open(base + lang.path);
       const card = await t.evaluate(`(() => {
-        const el = document.querySelector('.card');
+        const el = document.querySelector('.hero .card');
         const bar = el.querySelector('progress');
         const chip = el.querySelector('.chip-paid');
         return {
-          cards: document.querySelectorAll('.card').length,
+          cards: document.querySelectorAll('.hero .card').length,
           tag: el.tagName,
           title: el.querySelector('.card-title').textContent.trim(),
           titleTag: el.querySelector('.card-title').tagName,
