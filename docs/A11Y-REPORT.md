@@ -75,8 +75,8 @@ The 8 missing SEO points come from one audit, `robots-txt`. Lighthouse fetches `
 | `tabs-distinct-content` | Both tab panels have three distinct steps |
 | `no-js-panels` | Tab panels stay readable without scripts |
 | `console-clean` | No console errors and no CSP violations on any page |
-| `video-embed` | The product video is visible with a title, a lazy `youtube-nocookie.com` frame that makes no request until it nears the viewport, a matching CSP `frame-src` and a full transcript in both languages |
-| `video-error-offline` | A failing video shows the error line and the transcript link |
+| `video-embed` | The product video is visible with a title, a lazy `youtube-nocookie.com` frame that makes no request until it nears the viewport, a matching CSP `frame-src` and a visible link to the video on YouTube |
+| `video-error-offline` | A failing video shows the error line and the YouTube link |
 | `faq-native` | The FAQ has seven native `details` items and keyboard behavior comes from the browser |
 | `counts` | Section, step, card and question counts match the design contract |
 | `menu-disclosure` | The menu button is 48 by 48, names its panel, reports its state and closes with Escape |

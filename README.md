@@ -61,9 +61,9 @@ Run `node scripts/ui-check.mjs` afterwards. If the new URL leaves the site, chec
 
 ## Product video
 
-The "About the product" video is a YouTube embed (`https://www.youtube-nocookie.com/embed/e3YCgq88J7c`) in the slot with `id="video-slot"` on both home pages. The frame stays empty until the visitor scrolls within 200 px of it, then `js/main.js` copies `data-src` to `src`. The CSP carries `frame-src https://www.youtube-nocookie.com`, and the full transcript sits under the player.
+The "About the product" video is a YouTube embed (`https://www.youtube-nocookie.com/embed/e3YCgq88J7c`) in the slot with `id="video-slot"` on both home pages. The frame stays empty until the visitor scrolls within 200 px of it, then `js/main.js` copies `data-src` to `src`. The CSP carries `frame-src https://www.youtube-nocookie.com`, and a link to the video on YouTube sits under the player.
 
-To change the video, edit the `data-src` attribute and the transcript on both pages, then run `bash scripts/check-csp.sh`, `node scripts/ui-check.mjs` and `node scripts/check-i18n-parity.mjs`. If the host changes, update the CSP `frame-src` and both privacy pages too.
+To change the video, edit the `data-src` attribute and the YouTube link on both pages, then run `bash scripts/check-csp.sh`, `node scripts/ui-check.mjs` and `node scripts/check-i18n-parity.mjs`. If the host changes, update the CSP `frame-src` and both privacy pages too.
 
 ## Change the site URL
 

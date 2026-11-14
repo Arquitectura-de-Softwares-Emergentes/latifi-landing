@@ -367,8 +367,8 @@ const LANGS = [
 ];
 
 const VIDEO_ERROR = {
-  en: 'The video could not load. Read the transcript instead.',
-  es: 'No se pudo cargar el video. Lee la transcripción.',
+  en: 'The video could not load. Open it on YouTube.',
+  es: 'No se pudo cargar el video. Ábrelo en YouTube.',
 };
 
 function makeScenarios(base, siteDir) {
@@ -717,8 +717,7 @@ function makeScenarios(base, siteDir) {
           dataSrc: frame.getAttribute('data-src'), title: frame.getAttribute('title'),
           frameCount: document.querySelectorAll('iframe').length,
           error: slot.querySelector('.video-error').hidden,
-          transcript: document.getElementById('video-transcript').textContent.trim().length,
-          transcriptHidden: document.getElementById('video-transcript').hidden,
+          link: slot.querySelector('.video-link').getAttribute('href'),
           frameSrc: (csp.match(/frame-src ([^;]*)/) || [])[1] };
       })()`);
       assert(!state.hidden && state.height > 0, `${lang.code}: the video slot is hidden or has no height`);
@@ -727,7 +726,7 @@ function makeScenarios(base, siteDir) {
       assert(state.src === null, `${lang.code}: the iframe loads before it nears the viewport (${state.src})`);
       assert(state.title && state.title.length > 5, `${lang.code}: the iframe has no title`);
       assert(state.frameCount === 1 && state.error, `${lang.code}: unexpected iframe count or visible error line`);
-      assert(state.transcript > 400 && !state.transcriptHidden, `${lang.code}: the transcript is missing or hidden`);
+      assert(state.link === 'https://youtu.be/e3YCgq88J7c', `${lang.code}: video link is "${state.link}"`);
       assert(state.frameSrc === 'https://www.youtube-nocookie.com', `${lang.code}: CSP frame-src is "${state.frameSrc}"`);
     }
     const origin = new URL(base).origin;
@@ -753,14 +752,14 @@ function makeScenarios(base, siteDir) {
       await t.waitFor(`(() => {
         const slot = document.getElementById('video-slot');
         const line = slot.querySelector('.video-error');
-        const link = slot.querySelector('.video-transcript');
+        const link = slot.querySelector('.video-link');
         const shown = (el) => !el.hidden && el.getBoundingClientRect().height > 0;
         return shown(line) && shown(link);
-      })()`, `${lang.code}: error line and transcript link`, 1000);
+      })()`, `${lang.code}: error line and YouTube link`, 1000);
       assert(Date.now() - started < 1500, `${lang.code}: the error line took too long`);
       const state = await t.evaluate(`({
         line: document.querySelector('#video-slot .video-error').textContent.trim(),
-        link: document.querySelector('#video-slot .video-transcript').textContent.trim(),
+        link: document.querySelector('#video-slot .video-link').textContent.trim(),
         src: document.querySelector('#video-slot iframe').getAttribute('src'),
       })`);
       assert(state.line === VIDEO_ERROR[lang.code], `${lang.code}: error line is "${state.line}"`);
