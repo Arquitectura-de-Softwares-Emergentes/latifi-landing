@@ -623,25 +623,12 @@ h2:focus {
   border: 0;
 }
 
-.video-transcript-text {
-  max-width: 68ch;
-  margin-top: var(--space-md);
-}
-
-.video-transcript-text h4 {
-  margin-bottom: var(--space-sm);
-}
-
-.video-transcript-text p + p {
-  margin-top: var(--space-sm);
-}
-
 .video-error {
   margin-top: var(--space-md);
   color: var(--color-text);
 }
 
-.video-transcript {
+.video-link {
   display: inline-flex;
   align-items: center;
   min-height: var(--target-min);
